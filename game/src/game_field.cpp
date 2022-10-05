@@ -17,7 +17,7 @@ namespace game{
     void GameField::draw_game_field(void) const noexcept{
         for(short row = m_GAME_FIELD_SIZE.height - 1; row >= 0; --row){
             for (short column = 0; column < m_GAME_FIELD_SIZE.width; ++column){
-                std::cout << field[row][column] << " ";
+                std::cout << m_field[row][column] << " ";
             }
             std::cout << std::endl;
         }
@@ -51,7 +51,7 @@ namespace game{
             }
 
             for (column; column < m_START_CHECKERS_IN_ROW * 2; column += 2){
-                field[row][column] = static_cast<int>(checker_color);
+                m_field[row][column] = static_cast<int>(checker_color);
             }
         }
     }
