@@ -19,7 +19,7 @@ namespace game{
         static constexpr short m_START_CHECKERS_IN_ROW {4};
         static constexpr Size m_GAME_FIELD_SIZE{8, 8};
 
-        std::array<std::array<short, m_GAME_FIELD_SIZE.width>, m_GAME_FIELD_SIZE.height> field = {0};
+        std::array<std::array<short, m_GAME_FIELD_SIZE.width>, m_GAME_FIELD_SIZE.height> m_field = {0};
 
     public:
         GameField(void);
