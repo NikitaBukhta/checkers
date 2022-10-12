@@ -1,39 +1,10 @@
-#----------------------------- CREATE LIBRARY -----------------------------#
-
-cmake_minimum_required(VERSION 3.6.0)
-
-set(
-    LIB_NAME
-    checkers_lib
-)
+add_subdirectory(exceptions)
+add_subdirectory(game_field)
 
 set(
-    SRC
-    src/game_checkers.cpp
-    src/checker.cpp
-    src/ifigure.cpp
-    src/game_field.cpp
-)
-
-add_library(
-    ${LIB_NAME}
-    ${SRC}
-)
-
-target_include_directories(
-    ${LIB_NAME}
-    PUBLIC 
-    include
-)
-
-#----------------------------- LINK LIBRARIES -----------------------------#
-
-set(
-    ALL_LIBS
-    exceptions_lib
-)
-
-target_link_libraries(
-    ${LIB_NAME}
-    ${ALL_LIBS}
+    GAME_CHECKERS_LINKER
+    "checkers_lib;
+    exceptions_lib"
+    CACHE FILEPATH 
+    ""
 )
