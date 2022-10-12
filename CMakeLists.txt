@@ -21,12 +21,11 @@ add_executable(
 #----------------------------- LINK LIBRARIES -----------------------------#
 
 add_subdirectory(game)
-add_subdirectory(exceptions)
+#add_subdirectory(exceptions)
 
 set(
     ALL_LIBS
-    checkers_lib
-    exceptions_lib
+    $CACHE{GAME_CHECKERS_LINKER}
 )
 
 target_link_libraries(
