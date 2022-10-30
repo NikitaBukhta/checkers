@@ -21,7 +21,6 @@ add_executable(
 #----------------------------- LINK LIBRARIES -----------------------------#
 
 add_subdirectory(game)
-#add_subdirectory(exceptions)
 
 set(
     ALL_LIBS

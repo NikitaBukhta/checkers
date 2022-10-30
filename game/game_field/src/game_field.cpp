@@ -23,6 +23,10 @@ namespace game{
         }
     }
 
+    constexpr const short GameField::get_max_checkers_count(void) noexcept{
+        return m_START_CHECKERS_IN_ROW * m_START_ROWS_COUNT;
+    }
+
     void GameField::fill_checkers_field_with(Color checker_color){
         short start_row = 0;
         

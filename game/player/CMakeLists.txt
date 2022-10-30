@@ -1,18 +1,15 @@
 #----------------------------- CREATE LIBRARY -----------------------------#
 
-cmake_minimum_required(VERSION 3.6.0)
+cmake_minimum_required(VERSION 3.0.0)
 
 set(
     LIB_NAME
-    game_field_lib
+    players_lib
 )
 
 set(
     SRC
-    src/game_checkers.cpp
-    src/checker.cpp
-    src/ifigure.cpp
-    src/game_field.cpp
+    src/player.cpp
 )
 
 add_library(
@@ -22,7 +19,7 @@ add_library(
 
 target_include_directories(
     ${LIB_NAME}
-    PUBLIC 
+    PUBLIC
     include
 )
 
@@ -30,7 +27,7 @@ target_include_directories(
 
 set(
     ALL_LIBS
-    exceptions_lib
+    game_field_lib
 )
 
 target_link_libraries(
