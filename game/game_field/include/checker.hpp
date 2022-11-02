@@ -9,7 +9,7 @@ namespace game{
         Color m_color;
         Coord m_current_coord;
     public:
-        Checker(Coord coord = {}, Color color = Color::white) : m_current_coord(coord), m_color(color) {}
+        Checker(Coord coord = {}, Color color = Color::no_color) : m_current_coord(coord), m_color(color) {}
 
         void make_move_to(const Coord &coord) override;
 

@@ -1,6 +1,6 @@
 add_subdirectory(exceptions)
-add_subdirectory(game_field)
 add_subdirectory(player)
+add_subdirectory(game_field)
 
 # set cached variable to link all libs;
 set(

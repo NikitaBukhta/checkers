@@ -31,6 +31,7 @@ target_include_directories(
 set(
     ALL_LIBS
     exceptions_lib
+    players_lib
 )
 
 target_link_libraries(
