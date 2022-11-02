@@ -6,6 +6,7 @@
 #include <array>
 #include <thread>
 #include <iostream>
+#include <deque>
 
 namespace game{
     struct Size{
@@ -15,26 +16,18 @@ namespace game{
 
     class GameField{
     private:
-        static constexpr short m_START_ROWS_COUNT {3};
-        static constexpr short m_START_CHECKERS_IN_ROW {4};
         static constexpr Size m_GAME_FIELD_SIZE{8, 8};
 
-        std::array<std::array<short, m_GAME_FIELD_SIZE.width>, m_GAME_FIELD_SIZE.height> m_field = {0};
+        std::array<std::array<Color, m_GAME_FIELD_SIZE.width>, m_GAME_FIELD_SIZE.height> m_field = {Color::NO_COLOR};
 
     public:
-        GameField(void);
+        GameField(void) = default;
 
         static Size get_game_field_size(void) noexcept;
 
-        /* Description:
-         * Return max count of checkers that one side can own;
-         */
-        static short get_max_checkers_count(void) noexcept;
-
         void draw_game_field(void) const noexcept;
 
-    private:
-        void fill_checkers_field_with(Color checker_color);
+        void add_checkers(const std::deque<Checker> &checkers);
     };
 }
 
