@@ -23,7 +23,7 @@ namespace game{
         }
     }
 
-    constexpr const short GameField::get_max_checkers_count(void) noexcept{
+    short GameField::get_max_checkers_count(void) noexcept{
         return m_START_CHECKERS_IN_ROW * m_START_ROWS_COUNT;
     }
 

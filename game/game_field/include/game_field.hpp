@@ -29,7 +29,7 @@ namespace game{
         /* Description:
          * Return max count of checkers that one side can own;
          */
-        static constexpr const short get_max_checkers_count(void) noexcept;
+        static short get_max_checkers_count(void) noexcept;
 
         void draw_game_field(void) const noexcept;
 
