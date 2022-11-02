@@ -18,9 +18,15 @@ namespace game{
 
     public:
         int start(void) override;
-
+        
+        /* Descriptions:
+         *  Return count of checkers in row at the start spawn;
+         */
         static short get_start_checkers_in_row(void) noexcept;
 
+        /* Descriptions:
+         *  Return count of rows with checkers at the start spawn;
+         */
         static short get_start_rows_count(void) noexcept;
     };
 }

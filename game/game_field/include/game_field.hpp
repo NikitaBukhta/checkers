@@ -23,10 +23,22 @@ namespace game{
     public:
         GameField(void) = default;
 
+        /* Descriptions:
+         *  Return game field size;
+         */
         static Size get_game_field_size(void) noexcept;
 
+        /* Descriptions:
+         *  Draw game field in console;
+         */
         void draw_game_field(void) const noexcept;
 
+        /* Descriptions:
+         *  Added new checkers to game field;
+         * 
+         * Args:
+         *  checkers - list of checkers we need to add to game field;
+         */
         void add_checkers(const std::deque<Checker> &checkers);
     };
 }
