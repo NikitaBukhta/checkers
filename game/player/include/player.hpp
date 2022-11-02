@@ -4,41 +4,24 @@
 #include "checker.hpp"
 #include "unright_color_exception.hpp"
 #include "game_checkers.hpp"
+#include "player_info.hpp"
 
 #include <deque>
 #include <string>
 
 namespace game{
-    class Player{
+    class Player : public PlayerInfo{
     private:
         std::deque<Checker> m_checkers;
-        std::wstring m_nickname;
+        
     public:
         /* Description:
          * Default constructor of players;s
          * Init count checkers based on GameField max checkers count from one side;
          */
-        Player(void);
+        Player(const std::wstring nickname = L"Bot");
 
         Player(Color checkers_color, const std::wstring nickname = L"Bot");
-
-        /* Description:
-         *  Return player's nickname;
-         */
-        std::wstring get_nickname(void) const;
-
-        /* Description:
-         *  Return player's nickname;
-         *
-         * Args:
-         *  nickname - container is player's nickname will be written;
-         */
-        void get_nickname(std::wstring &nickname) const;
-
-        /* Description:
-         *  Set new player nickname;
-         */
-        void set_nickname(const std::wstring &nickname);
 
         /* Description:
          *  Return player's checkers;

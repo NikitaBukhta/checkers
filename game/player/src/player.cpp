@@ -1,26 +1,12 @@
 #include "player.hpp"
 
 namespace game{
-    Player::Player(void){
+    Player::Player(const std::wstring nickname) : PlayerInfo(nickname){
         m_checkers.resize(GameCheckers::get_start_checkers_in_row() * GameCheckers::get_start_rows_count());
     }
 
-    Player::Player(Color color, const std::wstring nickname) : Player(){
-        m_nickname = nickname;
-
+    Player::Player(Color color, const std::wstring nickname) : Player(nickname){
         set_checkers_start_coord(color);
-    }
-
-    std::wstring Player::get_nickname(void) const{
-        return m_nickname;
-    }
-
-    void Player::get_nickname(std::wstring &nickname) const{
-        nickname = m_nickname;
-    }
-
-    void Player::set_nickname(const std::wstring &nickname){
-        m_nickname = nickname;
     }
 
     std::deque<Checker> Player::get_checkers(void) const{

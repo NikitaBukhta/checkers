@@ -10,6 +10,7 @@ set(
 set(
     SRC
     src/player.cpp
+    src/player_info.cpp
 )
 
 add_library(
