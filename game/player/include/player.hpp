@@ -3,8 +3,9 @@
 
 #include "checker.hpp"
 #include "unright_color_exception.hpp"
-#include "game_checkers.hpp"
+#include "game_field.hpp"
 #include "player_info.hpp"
+#include "config.hpp"
 
 #include <deque>
 #include <string>

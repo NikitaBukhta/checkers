@@ -2,7 +2,7 @@
 
 namespace game{
     Player::Player(const std::wstring nickname) : PlayerInfo(nickname){
-        m_checkers.resize(GameCheckers::get_start_checkers_in_row() * GameCheckers::get_start_rows_count());
+        m_checkers.resize(config::START_CHECKERS_IN_ROW * config::START_ROWS_COUNT);
     }
 
     Player::Player(Color color, const std::wstring nickname) : Player(nickname){
@@ -19,8 +19,8 @@ namespace game{
 
     void Player::set_checkers_start_coord(Color color){
         short start_row = 0;
-        short start_rows_count = GameCheckers::get_start_rows_count();
-        short start_checkers_in_row = GameCheckers::get_start_checkers_in_row();
+        short start_rows_count = config::START_ROWS_COUNT;
+        short start_checkers_in_row = config::START_CHECKERS_IN_ROW;
         
         // looking for start position for checkers
         // black from 5-th row, white from 1-st;

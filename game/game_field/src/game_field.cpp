@@ -1,8 +1,6 @@
 #include "game_field.hpp"
-#include "unright_color_exception.hpp"
 
 namespace game{
-
     Size GameField::get_game_field_size(void) noexcept{
         return m_GAME_FIELD_SIZE;
     }

@@ -1,6 +1,6 @@
 #----------------------------- CREATE LIBRARY -----------------------------#
 
-cmake_minimum_required(VERSION 3.0.0)
+cmake_minimum_required(VERSION 3.6.0)
 
 set(
     LIB_NAME
@@ -29,6 +29,7 @@ target_include_directories(
 set(
     ALL_LIBS
     game_field_lib
+    config_lib
 )
 
 target_link_libraries(

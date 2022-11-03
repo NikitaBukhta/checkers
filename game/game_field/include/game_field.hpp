@@ -2,6 +2,7 @@
 #define GAME_FIELD_HPP
 
 #include "checker.hpp"
+#include "unright_color_exception.hpp"
 
 #include <array>
 #include <thread>

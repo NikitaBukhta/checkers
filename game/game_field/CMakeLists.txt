@@ -32,6 +32,7 @@ set(
     ALL_LIBS
     exceptions_lib
     players_lib
+    config_lib
 )
 
 target_link_libraries(
