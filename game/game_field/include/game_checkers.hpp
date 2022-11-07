@@ -15,8 +15,8 @@ namespace game{
     private:
         GameField m_game_filed;
 
-        Player player_1;
-        Player player_2;
+        std::unique_ptr<Player> player_1;
+        std::unique_ptr<Player> player_2;
 
     public:
         GameCheckers(void);
