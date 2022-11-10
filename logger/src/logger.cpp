@@ -33,6 +33,13 @@ void Logger::set_file_name(const std::string &file_name){
     m_log_file.open(m_file_name, std::ios::out);
 }
 
+std::string Logger::ptr_to_string(const void *const ptr){
+    std::stringstream ptr_in_string;
+    ptr_in_string << ptr;
+    
+    return ptr_in_string.str();
+}
+
 std::string Logger::log_to_string(Level log_lvl){
     switch(log_lvl){
     case Level::FATAL:

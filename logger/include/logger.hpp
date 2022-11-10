@@ -8,6 +8,7 @@
 #include <mutex>
 #include <fstream>
 #include <memory>
+#include <sstream>
 
 class Logger{
 
@@ -32,6 +33,8 @@ public:
     static void do_log(const std::string &msg, Level log_lvl = Level::TRACE);
 
     static void set_file_name(const std::string &file_name);
+
+    static std::string ptr_to_string(const void *const ptr);
 
 private:
     Logger(void) = delete;
