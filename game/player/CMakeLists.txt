@@ -30,6 +30,8 @@ set(
     ALL_LIBS
     game_field_lib
     config_lib
+    exceptions_lib
+    logger_lib
 )
 
 target_link_libraries(

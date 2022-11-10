@@ -6,18 +6,23 @@
 #include "game_field.hpp"
 #include "player_info.hpp"
 #include "config.hpp"
+#include "wrong_checker_move_exception.hpp"
+#include "logger.hpp"
 
 #include <deque>
 #include <string>
+#include <algorithm>
+#include <memory>
+#include <sstream>
 
 namespace game{
     class Player : public PlayerInfo{
     private:
-        std::deque<Checker> m_checkers;
+        std::deque<std::shared_ptr<Checker>> m_checkers;
         
     public:
         /* Description:
-         * Default constructor of players;s
+         * Default constructor of players;
          * Init count checkers based on GameField max checkers count from one side;
          */
         Player(const std::wstring nickname = L"Bot");
@@ -26,16 +31,25 @@ namespace game{
 
         /* Description:
          *  Return player's checkers;
-         */
-        std::deque<Checker> get_checkers(void) const;
-
-        /* Description:
-         *  Return player's checkers;
          *
          * Args:
          *  checkers - container is player's checkers will be written;
          */
-        void get_checkers(std::deque<Checker> &checkers) const;
+        void get_checkers(std::deque<std::shared_ptr<Checker>> &checkers) const;
+
+        /* Description:
+         *  move checker to the new coord;
+         *  Warning!!!
+         *  method don't check if you move is right!
+         *
+         * Args:
+         *  old_coord - old checker coord;
+         *  new_coord - new checker coord;
+         * 
+         * Exceptions:
+         *  Throw WrongCheckerMoveException if checker isn't found or move is impossible;
+         */
+        void make_move_to(const Coord &old_coord, const Coord &new_coord);
 
     private:
         /* Description:

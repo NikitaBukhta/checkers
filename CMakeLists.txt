@@ -21,10 +21,12 @@ add_executable(
 #----------------------------- LINK LIBRARIES -----------------------------#
 
 add_subdirectory(game)
+add_subdirectory(logger)
 
 set(
     ALL_LIBS
     $CACHE{GAME_CHECKERS_LINKER}
+    logger_lib
 )
 
 target_link_libraries(

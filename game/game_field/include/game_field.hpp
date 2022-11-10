@@ -8,6 +8,7 @@
 #include <thread>
 #include <iostream>
 #include <deque>
+#include <memory>
 
 namespace game{
     struct Size{
@@ -40,7 +41,7 @@ namespace game{
          * Args:
          *  checkers - list of checkers we need to add to game field;
          */
-        void add_checkers(const std::deque<Checker> &checkers);
+        void add_checkers(const std::deque<std::shared_ptr<Checker>> &checkers);
     };
 }
 

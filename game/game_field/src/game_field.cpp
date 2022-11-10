@@ -14,11 +14,11 @@ namespace game{
         }
     }
 
-    void GameField::add_checkers(const std::deque<Checker> &checkers){
-        Color checkers_color = checkers[0].get_color();
+    void GameField::add_checkers(const std::deque<std::shared_ptr<Checker>> &checkers){
+        Color checkers_color = checkers[0]->get_color();
 
         for(auto &checker : checkers){
-            Coord current_checker_coord = checker.get_current_coord();
+            Coord current_checker_coord = checker->get_current_coord();
             m_field[current_checker_coord.coordY][current_checker_coord.coordX] = checkers_color;
         }
     }

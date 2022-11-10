@@ -33,6 +33,7 @@ set(
     exceptions_lib
     players_lib
     config_lib
+    logger_lib
 )
 
 target_link_libraries(

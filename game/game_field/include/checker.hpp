@@ -2,6 +2,10 @@
 #define CHECKER_HPP
 
 #include "ifigure.hpp"
+#include "wrong_checker_move_exception.hpp"
+
+#include <cmath>
+#include <string>
 
 namespace game{
     class Checker : public IFigure{
@@ -11,8 +15,20 @@ namespace game{
     public:
         Checker(Coord coord = {}, Color color = Color::NO_COLOR) : m_current_coord(coord), m_color(color) {}
 
+        Checker(const Checker &other);
+
+        bool operator== (const Checker &other);
+
+        bool operator!= (const Checker &other);
+
         /* Descriptions:
          *  Move checker to the specific coord;
+         *
+         * Args:
+         *  coord - new checker coord;
+         * 
+         * Exceptions:
+         *  Throw the WrongCheckerMoveException if distance from old to new coord more than (1; 1);
          */
         void make_move_to(const Coord &coord) override;
 

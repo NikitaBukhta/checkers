@@ -10,6 +10,7 @@ set(
 set(
     SRC
     src/unright_color_exception.cpp
+    src/wrong_checker_move_exception.cpp
 )
 
 add_library(

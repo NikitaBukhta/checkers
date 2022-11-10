@@ -14,9 +14,13 @@ namespace game{
 
         void operator= (const Coord &other);
 
-        bool operator== (const Coord &other);
+        bool operator== (const Coord &other) const;
 
-        bool operator!= (const Coord &other);
+        bool operator!= (const Coord &other) const;
+
+        Coord operator- (const Coord &other) const;
+
+        Coord operator+ (const Coord &other) const;
     };
 
     class IFigure{
