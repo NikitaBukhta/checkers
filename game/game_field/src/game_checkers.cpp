@@ -9,7 +9,7 @@ namespace game{
     }
 
     int GameCheckers::start(void){
-        Logger::do_log("Game started", Logger::Level::TRACE);
+        Logger::do_log("GameCheckers::start called (" + Logger::ptr_to_string(this) + ")", Logger::Level::TRACE);
 
         std::deque<std::shared_ptr<Checker>> player_1_checkers;
         std::deque<std::shared_ptr<Checker>> player_2_checkers;
@@ -26,6 +26,7 @@ namespace game{
     }
     
     void GameCheckers::make_move_to(const Coord &old_coord, const Coord &new_coord){
+
         Player *current_player;
 
         switch (m_current_move){

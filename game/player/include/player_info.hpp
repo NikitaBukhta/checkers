@@ -1,7 +1,10 @@
 #ifndef PLAYER_INFO_HPP
 #define PLAYER_INFO_HPP
 
+#include "logger.hpp"
+
 #include <string>
+#include <sstream>
 
 namespace game{
     class PlayerInfo{

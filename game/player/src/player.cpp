@@ -12,23 +12,18 @@ namespace game{
     }
 
     void Player::get_checkers(std::deque<std::shared_ptr<Checker>> &checkers) const{
-        Logger::do_log("Get checkers from (" + Logger::ptr_to_string(this) + ")", Logger::Level::TRACE);
+        Logger::do_log("Player::get_checkers called (" + Logger::ptr_to_string(this) + ")", Logger::Level::TRACE);
         size_t checkers_count = m_checkers.size();
 
         if(!checkers.empty()){
             checkers.clear();
         }
         checkers.resize(checkers_count);
-        /*
-        std::transform(std::begin(m_checkers), std::end(m_checkers), std::begin(checkers), 
-            [](std::shared_ptr<Checker> object){
-                //return std::make_shared<Checker>(*object.get());
-                return object;
-            }
-        );*/
+
         for (size_t i = 0; i < checkers_count; ++i){
             checkers[i].reset(new Checker(*m_checkers[i].get()));
-            Logger::do_log("Checker #" + std::to_string(i) + " color: " + (checkers[i]->get_color() == Color::WHITE ? "white" : "black") + 
+            Logger::do_log("Checker #" + std::to_string(i) + " (" + Logger::ptr_to_string(&checkers[i]) 
+                + ") color: " + (checkers[i]->get_color() == Color::WHITE ? "white" : "black") +
                 "; Coord: {" + std::to_string(checkers[i]->get_current_coord().coordX) + "; " + 
                 std::to_string(checkers[i]->get_current_coord().coordY) + "}", Logger::Level::DEBUG
             );
@@ -36,6 +31,7 @@ namespace game{
     }
 
     void Player::set_checkers_start_coord(Color color){
+        Logger::do_log("Player::set_checkers_start_coord (" + Logger::ptr_to_string(this) + ")", Logger::Level::TRACE);
         short start_row = 0;
         short start_rows_count = config::START_ROWS_COUNT;
         short start_checkers_in_row = config::START_CHECKERS_IN_ROW;
@@ -70,6 +66,11 @@ namespace game{
 
             for (column; column < start_checkers_in_row * 2; column += 2){
                 checker->reset(new Checker(Coord{column, row}, color));
+                Logger::do_log("Set checker #" + std::to_string(start_checkers_in_row * (row - start_row) + column / 2) + 
+                    " (" + Logger::ptr_to_string(&(*checker)) + ") color: " + 
+                    (color == Color::WHITE ? "white" : "black") + "; Coord: {" + std::to_string(column) +
+                    "; " + std::to_string(row) + "};", Logger::Level::DEBUG
+                );
 
                 // if no checkers left, end the loop;
                 if (++checker == checker_end){
@@ -85,6 +86,8 @@ namespace game{
     }
     
     void Player::make_move_to(const Coord &old_coord, const Coord &new_coord){
+        Logger::do_log("Player::make_move_to called (" + Logger::ptr_to_string(this) + ")", Logger::Level::TRACE);
+
         // create temp checker to check if we have the such as;
         std::unique_ptr<Checker> needed_checker = std::make_unique<Checker>(Checker(old_coord, m_checkers[0]->get_color()));
         auto checker_it = std::find_if(std::begin(m_checkers), std::end(m_checkers), 
@@ -95,6 +98,7 @@ namespace game{
         needed_checker.release();
 
         if (checker_it == std::end(m_checkers)){
+            Logger::do_log("Player::make_move_to function throw the WrongCheckerMoveException");
             throw WrongCheckerMoveException("No checker found");
         }
 
@@ -102,6 +106,7 @@ namespace game{
             (*checker_it)->make_move_to(new_coord);
         }
         catch(WrongCheckerMoveException &error){
+            Logger::do_log("Player::make_move_to function throw the WrongCheckerMoveException");
             throw error;
         }
     }

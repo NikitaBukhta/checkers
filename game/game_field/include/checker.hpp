@@ -3,6 +3,7 @@
 
 #include "ifigure.hpp"
 #include "wrong_checker_move_exception.hpp"
+#include "logger.hpp"
 
 #include <cmath>
 #include <string>
