@@ -33,4 +33,25 @@ namespace game{
             m_field[current_checker_coord.coordY][current_checker_coord.coordX] = checkers_color;
         }
     }
+
+    void GameField::reset(void){
+        Logger::do_log("GameField::reset called (" + Logger::ptr_to_string(this) + ")");
+
+        m_field = {Color::NO_COLOR};
+
+        Logger::do_log("GameField cleared", Logger::Level::INFO);
+    }
+
+    bool GameField::coord_in_game_field(const Coord &coord) const noexcept{
+        bool ret = false;
+
+        ret = coord.coordX >= 0 && coord.coordX < m_GAME_FIELD_SIZE.width &&
+            coord.coordY >= 0 && coord.coordY < m_GAME_FIELD_SIZE.height;
+
+        Logger::do_log("GameField::coord_in_game_field called (" + Logger::ptr_to_string(this) + 
+            "). Returned: " + (ret ? "true" : "false"), Logger::Level::DEBUG
+        );
+
+        return ret;
+    }
 }

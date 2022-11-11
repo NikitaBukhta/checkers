@@ -16,7 +16,7 @@ namespace game{
             std::string error_msg= "Imposible move from (" + std::to_string(m_current_coord.coordX) + "; " +
                 std::to_string(m_current_coord.coordY) + ") to (" + std::to_string(coord.coordX) + "; " + std::to_string(coord.coordY) + ").";
 
-            Logger::do_log("Checkers::make_move_to throw WrongCheckerMoveException. Move distance: {" +
+            Logger::do_log("Checkers::make_move_to (" + Logger::ptr_to_string(this) + ") throw WrongCheckerMoveException. Move distance: {" +
                 std::to_string(distance.coordX) + "; " + std::to_string(distance.coordY) + "};", Logger::Level::ERROR);
             throw WrongCheckerMoveException(error_msg);
         }

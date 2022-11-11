@@ -49,6 +49,10 @@ namespace game{
             break;
         
         default:
+            Logger::do_log("Player::set_checkers_start_coord" + Logger::ptr_to_string(this) + "function throw the UnrightColorException",
+                Logger::Level::ERROR
+            );
+
             throw UnrightColorException("Undefined color!");
         }
 
@@ -98,15 +102,25 @@ namespace game{
         needed_checker.release();
 
         if (checker_it == std::end(m_checkers)){
-            Logger::do_log("Player::make_move_to function throw the WrongCheckerMoveException");
-            throw WrongCheckerMoveException("No checker found");
+            Logger::do_log("Player::make_move_to (" + Logger::ptr_to_string(this) + ") function throw the WrongCheckerMoveException" +
+                "Checker with coord {" + std::to_string(old_coord.coordX) + "; " + std::to_string(old_coord.coordY) + "} and color " +
+                (m_checkers[0]->get_color() == Color::WHITE ? "white" : "black") + " is not found!",
+                Logger::Level::ERROR
+            );
+
+            throw WrongCheckerMoveException("Checker with coord {" + std::to_string(old_coord.coordX) + "; " + 
+                std::to_string(old_coord.coordY) + "} and color " +
+                (m_checkers[0]->get_color() == Color::WHITE ? "white" : "black") + " is not found!");
         }
 
         try{
             (*checker_it)->make_move_to(new_coord);
         }
-        catch(WrongCheckerMoveException &error){
-            Logger::do_log("Player::make_move_to function throw the WrongCheckerMoveException");
+        catch(const WrongCheckerMoveException &error){
+            Logger::do_log("Player::make_move_to (" + Logger::ptr_to_string(this) + ") function throw the WrongCheckerMoveException",
+                Logger::Level::ERROR
+            );
+            
             throw error;
         }
     }

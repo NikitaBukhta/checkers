@@ -42,6 +42,23 @@ namespace game{
          *  checkers - list of checkers we need to add to game field;
          */
         void add_checkers(const std::deque<std::shared_ptr<Checker>> &checkers);
+
+        /* Description:
+         *  Clear game field from all elements;
+         */
+        void reset(void);
+
+        /* Description:
+         *  check if coord inside game field;
+         *
+         * Args:
+         *  coord - coord we check;
+         * 
+         * Return values;
+         *  true - if coord inside game field;
+         *  false - in other case;
+         */
+        bool coord_in_game_field(const Coord &coord) const noexcept;
     };
 }
 
