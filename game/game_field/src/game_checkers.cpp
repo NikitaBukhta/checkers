@@ -131,11 +131,11 @@ namespace game{
         Logger::do_log("GameCheckers::output_current_turn_msg called (" + Logger::ptr_to_string(this) + ")", Logger::Level::TRACE);
         switch(m_current_move){
         case CurrentMove::PLAYER_1:
-            std::wcout << L"Current turn: " << m_player_1->get_nickname();
+            std::wcout << L"Current turn: " << m_player_1->get_nickname() << std::endl;
             break;
 
         case CurrentMove::PLAYER_2:
-            std::wcout << L"Current turn: " << m_player_2->get_nickname();
+            std::wcout << L"Current turn: " << m_player_2->get_nickname() << std::endl;
             break;
 
         default:

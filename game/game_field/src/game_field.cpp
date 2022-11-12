@@ -43,12 +43,15 @@ namespace game{
     }
 
     bool GameField::coord_in_game_field(const Coord &coord) const noexcept{
+        Logger::do_log("GameField::coord_in_game_field called (" + Logger::ptr_to_string(this) + ")", Logger::Level::TRACE
+        );
+
         bool ret = false;
 
         ret = coord.coordX >= 0 && coord.coordX < m_GAME_FIELD_SIZE.width &&
             coord.coordY >= 0 && coord.coordY < m_GAME_FIELD_SIZE.height;
 
-        Logger::do_log("GameField::coord_in_game_field called (" + Logger::ptr_to_string(this) + 
+        Logger::do_log("GameField::coord_in_game_field (" + Logger::ptr_to_string(this) + 
             "). Returned: " + (ret ? "true" : "false"), Logger::Level::DEBUG
         );
 

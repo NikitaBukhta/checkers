@@ -64,6 +64,10 @@ namespace game{
          *  Throw UnrightColorException if color is undefined;
          */
         void set_checkers_start_coord(Color color);
+
+        bool checker_is_exists(const Coord &coord, Color color) const;
+
+        bool checker_is_exists(const Coord &coord, Color color, std::deque<std::shared_ptr<Checker>>::const_iterator &checker_it) const;
     };
 }
 

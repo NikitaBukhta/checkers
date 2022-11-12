@@ -92,27 +92,32 @@ namespace game{
     void Player::make_move_to(const Coord &old_coord, const Coord &new_coord){
         Logger::do_log("Player::make_move_to called (" + Logger::ptr_to_string(this) + ")", Logger::Level::TRACE);
 
-        // create temp checker to check if we have the such as;
-        std::unique_ptr<Checker> needed_checker = std::make_unique<Checker>(Checker(old_coord, m_checkers[0]->get_color()));
-        auto checker_it = std::find_if(std::begin(m_checkers), std::end(m_checkers), 
-            [&](std::shared_ptr<Checker> obj){
-                return *obj.get() == *needed_checker;
-            }
-        );
-        needed_checker.release();
+        std::deque<std::shared_ptr<Checker>>::const_iterator checker_it;
+        // if needed checker is not exists;
+        if (!checker_is_exists(old_coord, m_checkers[0]->get_color(), checker_it)){
+            std::string error_msg = "Checker with coord {" + std::to_string(old_coord.coordX) + "; " + 
+                std::to_string(old_coord.coordY) + "} and color " +
+                (m_checkers[0]->get_color() == Color::WHITE ? "white" : "black") + " is not found!";
 
-        if (checker_it == std::end(m_checkers)){
-            Logger::do_log("Player::make_move_to (" + Logger::ptr_to_string(this) + ") function throw the WrongCheckerMoveException" +
-                "Checker with coord {" + std::to_string(old_coord.coordX) + "; " + std::to_string(old_coord.coordY) + "} and color " +
-                (m_checkers[0]->get_color() == Color::WHITE ? "white" : "black") + " is not found!",
-                Logger::Level::ERROR
+            Logger::do_log("Player::make_move_to (" + Logger::ptr_to_string(this) + ") function throw the WrongCheckerMoveException: " +
+                error_msg, Logger::Level::ERROR
             );
 
-            throw WrongCheckerMoveException("Checker with coord {" + std::to_string(old_coord.coordX) + "; " + 
-                std::to_string(old_coord.coordY) + "} and color " +
-                (m_checkers[0]->get_color() == Color::WHITE ? "white" : "black") + " is not found!");
+            throw WrongCheckerMoveException(error_msg);
         }
+        // if there is checker in new position
+        else if(checker_is_exists(new_coord, m_checkers[0]->get_color())){
+            std::string error_msg = "Checker with coord {" + std::to_string(old_coord.coordX) + "; " + 
+                std::to_string(old_coord.coordY) + "} and color " +
+                (m_checkers[0]->get_color() == Color::WHITE ? "white" : "black") + " stayed at this position!";
 
+            Logger::do_log("Player::make_move_to (" + Logger::ptr_to_string(this) + ") function throw the WrongCheckerMoveException: " +
+                error_msg, Logger::Level::ERROR
+            );
+            
+            throw WrongCheckerMoveException(error_msg);
+        }
+        
         try{
             (*checker_it)->make_move_to(new_coord);
         }
@@ -123,5 +128,31 @@ namespace game{
             
             throw error;
         }
+    }
+
+    bool Player::checker_is_exists(const Coord &coord, Color color) const{
+        std::deque<std::shared_ptr<Checker>>::const_iterator temp_it;
+
+        return checker_is_exists(coord, color, temp_it);
+    }
+
+    bool Player::checker_is_exists(const Coord &coord, Color color, std::deque<std::shared_ptr<Checker>>::const_iterator &checker_it) const{
+        Logger::do_log("Player::checker_is_exists called (" + Logger::ptr_to_string(this) + ")", Logger::Level::TRACE);
+
+        // create temp checker to check if we have the such as;
+        std::unique_ptr<Checker> needed_checker = std::make_unique<Checker>(Checker(coord, color));
+        checker_it = std::find_if(std::begin(m_checkers), std::end(m_checkers), 
+            [&](std::shared_ptr<Checker> obj){
+                return *obj.get() == *needed_checker;
+            }
+        );
+
+        bool ret = checker_it != std::end(m_checkers);
+
+        Logger::do_log("Player::checker_is_exists (" + Logger::ptr_to_string(this) + ") returned: " +
+            (ret ? "true" : "false"), Logger::Level::DEBUG
+        );
+        
+        return ret;
     }
 }
