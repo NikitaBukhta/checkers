@@ -94,7 +94,7 @@ namespace game{
 
         std::deque<std::shared_ptr<Checker>>::const_iterator checker_it;
         // if needed checker is not exists;
-        if (!checker_is_exists(old_coord, m_checkers[0]->get_color(), checker_it)){
+        if (!checker_is_exists(old_coord, checker_it)){
             std::string error_msg = "Checker with coord {" + std::to_string(old_coord.coordX) + "; " + 
                 std::to_string(old_coord.coordY) + "} and color " +
                 (m_checkers[0]->get_color() == Color::WHITE ? "white" : "black") + " is not found!";
@@ -106,7 +106,7 @@ namespace game{
             throw WrongCheckerMoveException(error_msg);
         }
         // if there is checker in new position
-        else if(checker_is_exists(new_coord, m_checkers[0]->get_color())){
+        else if(checker_is_exists(new_coord)){
             std::string error_msg = "Checker with coord {" + std::to_string(old_coord.coordX) + "; " + 
                 std::to_string(old_coord.coordY) + "} and color " +
                 (m_checkers[0]->get_color() == Color::WHITE ? "white" : "black") + " stayed at this position!";
@@ -130,17 +130,17 @@ namespace game{
         }
     }
 
-    bool Player::checker_is_exists(const Coord &coord, Color color) const{
+    bool Player::checker_is_exists(const Coord &coord) const{
         std::deque<std::shared_ptr<Checker>>::const_iterator temp_it;
 
-        return checker_is_exists(coord, color, temp_it);
+        return checker_is_exists(coord, temp_it);
     }
 
-    bool Player::checker_is_exists(const Coord &coord, Color color, std::deque<std::shared_ptr<Checker>>::const_iterator &checker_it) const{
+    bool Player::checker_is_exists(const Coord &coord, std::deque<std::shared_ptr<Checker>>::const_iterator &checker_it) const{
         Logger::do_log("Player::checker_is_exists called (" + Logger::ptr_to_string(this) + ")", Logger::Level::TRACE);
 
         // create temp checker to check if we have the such as;
-        std::unique_ptr<Checker> needed_checker = std::make_unique<Checker>(Checker(coord, color));
+        std::unique_ptr<Checker> needed_checker = std::make_unique<Checker>(Checker(coord, m_checkers[0]->get_color()));
         checker_it = std::find_if(std::begin(m_checkers), std::end(m_checkers), 
             [&](std::shared_ptr<Checker> obj){
                 return *obj.get() == *needed_checker;

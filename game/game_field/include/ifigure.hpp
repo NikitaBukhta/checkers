@@ -5,7 +5,9 @@ namespace game{
     enum class Color : char{
         NO_COLOR = 0,
         WHITE,
-        BLACK
+        BLACK,
+        WHITE_QUEEN,
+        BLACK_QUEEN
     };
 
     struct Coord{

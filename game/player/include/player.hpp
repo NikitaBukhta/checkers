@@ -65,9 +65,9 @@ namespace game{
          */
         void set_checkers_start_coord(Color color);
 
-        bool checker_is_exists(const Coord &coord, Color color) const;
+        bool checker_is_exists(const Coord &coord) const;
 
-        bool checker_is_exists(const Coord &coord, Color color, std::deque<std::shared_ptr<Checker>>::const_iterator &checker_it) const;
+        bool checker_is_exists(const Coord &coord, std::deque<std::shared_ptr<Checker>>::const_iterator &checker_it) const;
     };
 }
 

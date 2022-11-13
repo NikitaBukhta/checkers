@@ -13,6 +13,7 @@ set(
     src/checker.cpp
     src/ifigure.cpp
     src/game_field.cpp
+    src/checker_queen.cpp
 )
 
 add_library(

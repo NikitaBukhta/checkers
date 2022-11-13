@@ -12,15 +12,18 @@ namespace game{
     class Checker : public IFigure{
     private:
         Color m_color;
+    
+    protected:
         Coord m_current_coord;
+    
     public:
         Checker(Coord coord = {}, Color color = Color::NO_COLOR) : m_current_coord(coord), m_color(color) {}
 
         Checker(const Checker &other);
 
-        bool operator== (const Checker &other);
+        bool operator== (const Checker &other) const;
 
-        bool operator!= (const Checker &other);
+        bool operator!= (const Checker &other) const;
 
         /* Descriptions:
          *  Move checker to the specific coord;

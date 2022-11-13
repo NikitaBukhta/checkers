@@ -28,12 +28,12 @@ namespace game{
         m_current_coord = coord;
     }
 
-    bool Checker::operator== (const Checker &other){
+    bool Checker::operator== (const Checker &other) const{
         return this->m_color == other.m_color &&
             this->m_current_coord == other.m_current_coord;
     }
 
-    bool Checker::operator!= (const Checker &other){
+    bool Checker::operator!= (const Checker &other) const{
         return this->m_color != other.m_color ||
             this->m_current_coord != other.m_current_coord;
     }
