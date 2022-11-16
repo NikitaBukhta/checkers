@@ -61,17 +61,15 @@ namespace game{
             case Color::BLACK:
                 return "black";
 
-            case Color::BLACK_QUEEN:
-                return "black queen";
-
             case Color::WHITE:
                 return "white";
-
-            case Color::WHITE_QUEEN:
-                return "white queen";
 
             default:
                 return "no color";
         }
+    }
+
+    CheckerType Checker::get_checker_type(void) const{
+        return m_checker_type;
     }
 }

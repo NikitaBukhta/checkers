@@ -12,18 +12,27 @@ namespace game{
     class Checker : public IFigure{
     private:
         Color m_color;
+
+        CheckerType m_checker_type;
     
     protected:
         Coord m_current_coord;
     
     public:
-        Checker(Coord coord = {}, Color color = Color::NO_COLOR) : m_current_coord(coord), m_color(color) {}
+        Checker(Coord coord = {}, Color color = Color::NO_COLOR) : m_current_coord(coord), m_color(color), m_checker_type(CheckerType::CHECKER) {}
 
         Checker(const Checker &other);
 
         bool operator== (const Checker &other) const;
 
         bool operator!= (const Checker &other) const;
+
+    protected:
+        Checker(Coord coord, Color color, CheckerType checker_type) : Checker(coord, color){
+            m_checker_type = checker_type;
+        }
+
+    public:
 
         /* Descriptions:
          *  Move checker to the specific coord;
@@ -63,6 +72,8 @@ namespace game{
         void set_color(Color color) noexcept;
 
         std::string color_to_string(void) const override;
+
+        CheckerType get_checker_type(void) const override;
     };
 }
 

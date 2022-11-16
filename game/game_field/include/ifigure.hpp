@@ -7,9 +7,12 @@ namespace game{
     enum class Color : char{
         NO_COLOR = 0,
         WHITE,
-        BLACK,
-        WHITE_QUEEN,
-        BLACK_QUEEN
+        BLACK
+    };
+
+    enum class CheckerType : char{
+        CHECKER = 0,
+        QUEEN = 2
     };
 
     struct Coord{
@@ -32,6 +35,8 @@ namespace game{
         virtual void make_move_to(const Coord &coord) = 0;
 
         virtual std::string color_to_string(void) const = 0;
+
+        virtual CheckerType get_checker_type(void) const = 0;
     };
 }
 

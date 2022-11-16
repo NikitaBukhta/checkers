@@ -6,7 +6,7 @@
 namespace game{
     class CheckerQueen : public Checker{
     public:
-        CheckerQueen(Coord coord = {}, Color color = Color::NO_COLOR) : Checker(coord, color) {};
+        CheckerQueen(Coord coord = {}, Color color = Color::NO_COLOR) : Checker(coord, color, CheckerType::QUEEN) {};
 
         CheckerQueen(const CheckerQueen &other) = default;
 
