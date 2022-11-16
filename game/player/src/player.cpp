@@ -23,7 +23,7 @@ namespace game{
         for (size_t i = 0; i < checkers_count; ++i){
             checkers[i].reset(new Checker(*m_checkers[i].get()));
             Logger::do_log("Checker #" + std::to_string(i) + " (" + Logger::ptr_to_string(&checkers[i]) 
-                + ") color: " + (checkers[i]->get_color() == Color::WHITE ? "white" : "black") +
+                + ") color: " + checkers[i]->color_to_string() +
                 "; Coord: {" + std::to_string(checkers[i]->get_current_coord().coordX) + "; " + 
                 std::to_string(checkers[i]->get_current_coord().coordY) + "}", Logger::Level::DEBUG
             );
@@ -97,7 +97,7 @@ namespace game{
         if (!checker_is_exists(old_coord, checker_it)){
             std::string error_msg = "Checker with coord {" + std::to_string(old_coord.coordX) + "; " + 
                 std::to_string(old_coord.coordY) + "} and color " +
-                (m_checkers[0]->get_color() == Color::WHITE ? "white" : "black") + " is not found!";
+                m_checkers[0]->color_to_string() + " is not found!";
 
             Logger::do_log("Player::make_move_to (" + Logger::ptr_to_string(this) + ") function throw the WrongCheckerMoveException: " +
                 error_msg, Logger::Level::ERROR
@@ -109,7 +109,7 @@ namespace game{
         else if(checker_is_exists(new_coord)){
             std::string error_msg = "Checker with coord {" + std::to_string(old_coord.coordX) + "; " + 
                 std::to_string(old_coord.coordY) + "} and color " +
-                (m_checkers[0]->get_color() == Color::WHITE ? "white" : "black") + " stayed at this position!";
+                m_checkers[0]->color_to_string() + " stayed at this position!";
 
             Logger::do_log("Player::make_move_to (" + Logger::ptr_to_string(this) + ") function throw the WrongCheckerMoveException: " +
                 error_msg, Logger::Level::ERROR

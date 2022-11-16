@@ -61,6 +61,8 @@ namespace game{
          *  color - new checker's color;
          */
         void set_color(Color color) noexcept;
+
+        std::string color_to_string(void) const override;
     };
 }
 

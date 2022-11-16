@@ -53,4 +53,25 @@ namespace game{
     void Checker::set_color(Color color) noexcept{
         m_color = color;
     }
+
+    std::string Checker::color_to_string() const{
+        Logger::do_log("Checker::color_to_string called )" + Logger::ptr_to_string(this) + ")", Logger::Level::TRACE);
+
+        switch(m_color){
+            case Color::BLACK:
+                return "black";
+
+            case Color::BLACK_QUEEN:
+                return "black queen";
+
+            case Color::WHITE:
+                return "white";
+
+            case Color::WHITE_QUEEN:
+                return "white queen";
+
+            default:
+                return "no color";
+        }
+    }
 }

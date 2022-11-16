@@ -1,6 +1,8 @@
 #ifndef IFIGURE_H
 #define IFIGURE_H
 
+#include <string>
+
 namespace game{
     enum class Color : char{
         NO_COLOR = 0,
@@ -28,6 +30,8 @@ namespace game{
     class IFigure{
     public:
         virtual void make_move_to(const Coord &coord) = 0;
+
+        virtual std::string color_to_string(void) const = 0;
     };
 }
 

@@ -23,7 +23,7 @@ namespace game{
 
     void GameField::add_checkers(const std::deque<std::shared_ptr<Checker>> &checkers){
         Logger::do_log("GameField::add_checkers (" + Logger::ptr_to_string(this) + ") called. Color: " +
-            (checkers[0]->get_color() == Color::WHITE ? "white" : "black"), Logger::Level::TRACE
+            checkers[0]->color_to_string(), Logger::Level::TRACE
         );
 
         Color checkers_color = checkers[0]->get_color();
