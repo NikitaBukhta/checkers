@@ -4,6 +4,7 @@ namespace game{
     Checker::Checker(const Checker &other){
         this->m_color = other.m_color;
         this->m_current_coord = other.m_current_coord;
+        this->m_checker_type = other.m_checker_type;
     }
 
     void Checker::make_move_to(const Coord &coord){

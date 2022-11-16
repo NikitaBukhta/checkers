@@ -20,7 +20,7 @@ namespace game{
     private:
         static constexpr Size m_GAME_FIELD_SIZE{8, 8};
 
-        std::array<std::array<Color, m_GAME_FIELD_SIZE.width>, m_GAME_FIELD_SIZE.height> m_field = {Color::NO_COLOR};
+        std::array<std::array<unsigned short, m_GAME_FIELD_SIZE.width>, m_GAME_FIELD_SIZE.height> m_field = {0};
 
     public:
         GameField(void) = default;

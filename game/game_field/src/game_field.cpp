@@ -30,14 +30,15 @@ namespace game{
 
         for(auto &checker : checkers){
             Coord current_checker_coord = checker->get_current_coord();
-            m_field[current_checker_coord.coordY][current_checker_coord.coordX] = checkers_color;
+
+            m_field[current_checker_coord.coordY][current_checker_coord.coordX] = static_cast<int>(checkers_color) + static_cast<int>(checker->get_checker_type());
         }
     }
 
     void GameField::reset(void){
         Logger::do_log("GameField::reset called (" + Logger::ptr_to_string(this) + ")");
 
-        m_field = {Color::NO_COLOR};
+        m_field = {0};
 
         Logger::do_log("GameField cleared", Logger::Level::INFO);
     }

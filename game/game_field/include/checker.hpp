@@ -19,7 +19,7 @@ namespace game{
         Coord m_current_coord;
     
     public:
-        Checker(Coord coord = {}, Color color = Color::NO_COLOR) : m_current_coord(coord), m_color(color), m_checker_type(CheckerType::CHECKER) {}
+        Checker(Coord coord = {}, Color color = Color::NO_COLOR) : Checker(coord, color, CheckerType::CHECKER) {}
 
         Checker(const Checker &other);
 
@@ -28,7 +28,9 @@ namespace game{
         bool operator!= (const Checker &other) const;
 
     protected:
-        Checker(Coord coord, Color color, CheckerType checker_type) : Checker(coord, color){
+        Checker(Coord coord, Color color, CheckerType checker_type){
+            m_current_coord = coord;
+            m_color = color;
             m_checker_type = checker_type;
         }
 
