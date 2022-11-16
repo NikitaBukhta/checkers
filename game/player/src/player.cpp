@@ -94,7 +94,7 @@ namespace game{
 
         std::deque<std::shared_ptr<Checker>>::const_iterator checker_it;
         // if needed checker is not exists;
-        if (!checker_is_exists(old_coord, checker_it)){
+        if (!contain_checker(old_coord, checker_it)){
             std::string error_msg = "Checker with coord {" + std::to_string(old_coord.coordX) + "; " + 
                 std::to_string(old_coord.coordY) + "} and color " +
                 m_checkers[0]->color_to_string() + " is not found!";
@@ -106,7 +106,7 @@ namespace game{
             throw WrongCheckerMoveException(error_msg);
         }
         // if there is checker in new position
-        else if(checker_is_exists(new_coord)){
+        else if(contain_checker(new_coord)){
             std::string error_msg = "Checker with coord {" + std::to_string(old_coord.coordX) + "; " + 
                 std::to_string(old_coord.coordY) + "} and color " +
                 m_checkers[0]->color_to_string() + " stayed at this position!";
@@ -119,6 +119,12 @@ namespace game{
         }
         
         try{
+            Logger::do_log("Player::make_move_to (" + Logger::ptr_to_string(this) + "). Checker info: coord: {" +
+                std::to_string((*checker_it)->get_current_coord().coordX) + "; " +
+                std::to_string((*checker_it)->get_current_coord().coordY) + "}, color: " + (*checker_it)->color_to_string(),
+                Logger::Level::DEBUG
+            );
+
             (*checker_it)->make_move_to(new_coord);
         }
         catch(const WrongCheckerMoveException &error){
@@ -130,27 +136,25 @@ namespace game{
         }
     }
 
-    bool Player::checker_is_exists(const Coord &coord) const{
-        std::deque<std::shared_ptr<Checker>>::const_iterator temp_it;
+    bool Player::contain_checker(const Coord &coord) const{
+        std::deque<std::shared_ptr<Checker>>::const_iterator checker_it;
 
-        return checker_is_exists(coord, temp_it);
+        return contain_checker(coord, checker_it);
     }
 
-    bool Player::checker_is_exists(const Coord &coord, std::deque<std::shared_ptr<Checker>>::const_iterator &checker_it) const{
-        Logger::do_log("Player::checker_is_exists called (" + Logger::ptr_to_string(this) + ")", Logger::Level::TRACE);
+    bool Player::contain_checker(const Coord &coord, std::deque<std::shared_ptr<Checker>>::const_iterator &checker_it) const{
+        Logger::do_log("Player::contain_checker called (" + Logger::ptr_to_string(this) + ").", Logger::Level::TRACE);
 
-        // create temp checker to check if we have the such as;
-        std::unique_ptr<Checker> needed_checker = std::make_unique<Checker>(Checker(coord, m_checkers[0]->get_color()));
         checker_it = std::find_if(std::begin(m_checkers), std::end(m_checkers), 
-            [&](std::shared_ptr<Checker> obj){
-                return *obj.get() == *needed_checker;
+            [&](std::shared_ptr<Checker> checker){
+                return checker->get_current_coord() == coord;
             }
         );
 
         bool ret = checker_it != std::end(m_checkers);
 
-        Logger::do_log("Player::checker_is_exists (" + Logger::ptr_to_string(this) + ") returned: " +
-            (ret ? "true" : "false"), Logger::Level::DEBUG
+        Logger::do_log("Player::costain_checker (" + Logger::ptr_to_string(this) + ") returned: " +
+            (ret? "true" : "false"), Logger::Level::INFO
         );
         
         return ret;

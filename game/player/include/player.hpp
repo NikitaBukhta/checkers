@@ -10,6 +10,7 @@
 #include "logger.hpp"
 
 #include <deque>
+#include <vector>
 #include <string>
 #include <algorithm>
 #include <memory>
@@ -51,6 +52,8 @@ namespace game{
          */
         void make_move_to(const Coord &old_coord, const Coord &new_coord);
 
+        bool contain_checker(const Coord &coord) const;
+
     private:
         /* Description:
          *  Set start coord for checker, depends on that color;
@@ -65,9 +68,7 @@ namespace game{
          */
         void set_checkers_start_coord(Color color);
 
-        bool checker_is_exists(const Coord &coord) const;
-
-        bool checker_is_exists(const Coord &coord, std::deque<std::shared_ptr<Checker>>::const_iterator &checker_it) const;
+        bool contain_checker(const Coord &coord, std::deque<std::shared_ptr<Checker>>::const_iterator &checker_it) const;
     };
 }
 
