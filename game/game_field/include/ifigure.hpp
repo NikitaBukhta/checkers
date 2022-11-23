@@ -28,6 +28,12 @@ namespace game{
         Coord operator- (const Coord &other) const;
 
         Coord operator+ (const Coord &other) const;
+
+        Coord operator/ (const int value) const; 
+
+        Coord operator* (const int value) const;
+
+        std::string to_string(void) const;
     };
 
     class IFigure{
