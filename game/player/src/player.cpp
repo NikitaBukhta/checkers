@@ -30,6 +30,17 @@ namespace game{
         }
     }
 
+    void Player::get_checker(const Coord &coord, std::unique_ptr<Checker> &checker) const{
+        std::deque<std::shared_ptr<Checker>>::const_iterator checker_it;
+
+        if(contain_checker(coord, checker_it)){
+            checker.reset(new Checker(*checker_it->get()));
+        }
+        else{
+            checker.reset(nullptr);
+        }
+    }
+
     void Player::set_checkers_start_coord(Color color){
         Logger::do_log("Player::set_checkers_start_coord (" + Logger::ptr_to_string(this) + ")", Logger::Level::TRACE);
         short start_row = 0;

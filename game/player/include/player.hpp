@@ -38,6 +38,8 @@ namespace game{
          */
         void get_checkers(std::deque<std::shared_ptr<Checker>> &checkers) const;
 
+        void get_checker(const Coord &coord, std::unique_ptr<Checker> &checker) const;
+
         /* Description:
          *  move checker to the new coord;
          *  Warning!!!
