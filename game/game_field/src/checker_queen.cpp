@@ -10,7 +10,7 @@ namespace game{
     }
 
     void CheckerQueen::make_move_to(const Coord &coord){
-        Logger::do_log("CheckerQueen::make_move_to (" + Logger::ptr_to_string(this) + ")", Logger::Level::INFO);
+        std::thread(&Logger::do_log, "CheckerQueen::make_move_to (" + Logger::ptr_to_string(this) + ")", Logger::Level::INFO).detach();
 
         m_current_coord = coord;
     }
