@@ -4,6 +4,8 @@
 #include <memory>
 #include <iostream>
 #include <thread>
+#include <vector>
+#include <cmath>
 
 #include "igame.hpp"
 #include "checker.hpp"
@@ -19,6 +21,13 @@ namespace game{
         enum class CurrentMove : char{
             PLAYER_1,
             PLAYER_2
+        };
+
+        enum class CurrentMoveDirection : char{
+            LEFT_UP = 0,
+            LEFT_DOWN,
+            RIGHT_DOWN,
+            RIGHT_UP
         };
 
         GameField m_game_filed;
@@ -41,6 +50,10 @@ namespace game{
         void get_move_coord(Coord &old_coord, Coord &new_coord) const;
 
         void output_current_turn_msg(void);
+
+        bool enemies_in_line(const Coord &checker_coord, std::vector<Coord> &enemies_coord) const;
+
+        void move_simple_checker(const Coord &old_coord, const Coord &new_coord, Player *current_player);
     };
 }
 

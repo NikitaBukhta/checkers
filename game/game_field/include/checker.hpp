@@ -35,7 +35,6 @@ namespace game{
         }
 
     public:
-
         /* Descriptions:
          *  Move checker to the specific coord;
          *
@@ -76,6 +75,8 @@ namespace game{
         std::string color_to_string(void) const override;
 
         CheckerType get_checker_type(void) const override;
+
+        static Coord get_max_distance_to_move(void);
     };
 }
 

@@ -73,4 +73,8 @@ namespace game{
     CheckerType Checker::get_checker_type(void) const{
         return m_checker_type;
     }
+
+    Coord Checker::get_max_distance_to_move(void){
+        return {1, 1};
+    }
 }
