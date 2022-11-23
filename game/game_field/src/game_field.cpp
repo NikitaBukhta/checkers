@@ -4,14 +4,15 @@ namespace game{
     Size GameField::get_game_field_size(void) noexcept{
         Logger::do_log("Logger::get_game_field_size (static). Returned: width: " + 
             std::to_string(m_GAME_FIELD_SIZE.width) + "; height: " + 
-            std::to_string(m_GAME_FIELD_SIZE.height) + ";"
+            std::to_string(m_GAME_FIELD_SIZE.height) + ";",
+            Logger::Level::TRACE
         );
 
         return m_GAME_FIELD_SIZE;
     }
 
     void GameField::draw_game_field(void) const noexcept{
-        Logger::do_log("GameField::draw_game_field (" + Logger::ptr_to_string(this) + ") called", Logger::Level::TRACE);
+        Logger::do_log("GameField::draw_game_field (" + Logger::ptr_to_string(this) + ") called", Logger::Level::INFO);
 
         for(short row = m_GAME_FIELD_SIZE.height - 1; row >= 0; --row){
             for (short column = 0; column < m_GAME_FIELD_SIZE.width; ++column){
@@ -23,7 +24,7 @@ namespace game{
 
     void GameField::add_checkers(const std::deque<std::shared_ptr<Checker>> &checkers){
         Logger::do_log("GameField::add_checkers (" + Logger::ptr_to_string(this) + ") called. Color: " +
-            checkers[0]->color_to_string(), Logger::Level::TRACE
+            checkers[0]->color_to_string(), Logger::Level::INFO
         );
 
         Color checkers_color = checkers[0]->get_color();
@@ -36,16 +37,15 @@ namespace game{
     }
 
     void GameField::reset(void){
-        Logger::do_log("GameField::reset called (" + Logger::ptr_to_string(this) + ")");
+        Logger::do_log("GameField::reset called (" + Logger::ptr_to_string(this) + ")", Logger::Level::INFO);
 
         m_field = {0};
 
-        Logger::do_log("GameField cleared", Logger::Level::INFO);
+        Logger::do_log("GameField cleared", Logger::Level::DEBUG);
     }
 
     bool GameField::coord_in_game_field(const Coord &coord) const noexcept{
-        Logger::do_log("GameField::coord_in_game_field called (" + Logger::ptr_to_string(this) + ")", Logger::Level::TRACE
-        );
+        Logger::do_log("GameField::coord_in_game_field called (" + Logger::ptr_to_string(this) + ")", Logger::Level::INFO);
 
         bool ret = false;
 

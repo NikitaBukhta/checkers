@@ -2,30 +2,32 @@
 
 namespace game{
     Checker::Checker(const Checker &other){
+        Logger::do_log("Checker constructor called (" + Logger::ptr_to_string(this) + ")", Logger::Level::INFO);
+
         this->m_color = other.m_color;
         this->m_current_coord = other.m_current_coord;
         this->m_checker_type = other.m_checker_type;
     }
 
     void Checker::make_move_to(const Coord &coord){
-        Logger::do_log("Checker::make_move_to (" + Logger::ptr_to_string(this) + ")", Logger::Level::TRACE);
+        Logger::do_log("Checker::make_move_to (" + Logger::ptr_to_string(this) + ")", Logger::Level::INFO);
 
         Coord distance = m_current_coord - coord;
 
         // if we want to move checker to the longer distance than it can;
         if (std::abs(distance.coordX) != 1 || std::abs(distance.coordY) != 1){
-            std::string error_msg= "Imposible move from (" + std::to_string(m_current_coord.coordX) + "; " +
-                std::to_string(m_current_coord.coordY) + ") to (" + std::to_string(coord.coordX) + "; " + std::to_string(coord.coordY) + ").";
+            std::string error_msg= "Imposible move from " + m_current_coord.to_string()  + " to " + coord.to_string() + 
+                ". Distance: " + distance.to_string();
 
-            Logger::do_log("Checkers::make_move_to (" + Logger::ptr_to_string(this) + ") throw WrongCheckerMoveException. Move distance: {" +
-                std::to_string(distance.coordX) + "; " + std::to_string(distance.coordY) + "};", Logger::Level::ERROR);
+            Logger::do_log("Checkers::make_move_to (" + Logger::ptr_to_string(this) + ") throw WrongCheckerMoveException. " +
+                error_msg, Logger::Level::ERROR
+            );
+
             throw WrongCheckerMoveException(error_msg);
         }
 
-        Logger::do_log("Move (" + Logger::ptr_to_string(this) + ") from {" + std::to_string(m_current_coord.coordX) +
-            "; " + std::to_string(m_current_coord.coordY) + "} to {" + std::to_string(coord.coordX) + "; " + 
-            std::to_string(coord.coordY) + "}; ", Logger::Level::DEBUG
-        );
+        Logger::do_log("Move (" + Logger::ptr_to_string(this) + ") from " + m_current_coord.to_string() + " to " + coord.to_string(), Logger::Level::DEBUG);
+
         m_current_coord = coord;
     }
 
@@ -40,18 +42,26 @@ namespace game{
     }
 
     Coord Checker::get_current_coord(void) const{
+        Logger::do_log("Checker::get_current_coord called (" + Logger::ptr_to_string(this), Logger::Level::TRACE);
+        
         return m_current_coord;
     }
 
     void Checker::set_current_coord(const Coord &coord){
+        Logger::do_log("Checker::set_current_coord called (" + Logger::ptr_to_string(this), Logger::Level::TRACE);
+
         m_current_coord = coord;
     }
 
     Color Checker::get_color(void) const noexcept{
+        Logger::do_log("Checker::get_color called (" + Logger::ptr_to_string(this), Logger::Level::TRACE);
+
         return m_color;
     }
 
     void Checker::set_color(Color color) noexcept{
+        Logger::do_log("Checker::set_color called (" + Logger::ptr_to_string(this), Logger::Level::TRACE);
+
         m_color = color;
     }
 
@@ -71,10 +81,14 @@ namespace game{
     }
 
     CheckerType Checker::get_checker_type(void) const{
+        Logger::do_log("Checker::get_checker_type called (" + Logger::ptr_to_string(this), Logger::Level::TRACE);
+
         return m_checker_type;
     }
 
     Coord Checker::get_max_distance_to_move(void){
+        Logger::do_log("Checker::get_max_distance_to_move called (static)", Logger::Level::TRACE);
+
         return {1, 1};
     }
 }

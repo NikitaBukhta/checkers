@@ -2,7 +2,7 @@
 
 namespace game{
     GameCheckers::GameCheckers(void){
-        Logger::do_log("GameCheckers constructor called (" + Logger::ptr_to_string(this) + ")", Logger::Level::TRACE);
+        Logger::do_log("GameCheckers constructor called (" + Logger::ptr_to_string(this) + ")", Logger::Level::INFO);
 
         m_player_1.reset(new Player(Color::WHITE, L"Player_1"));
         m_player_2.reset(new Player(Color::BLACK, L"Player_2"));
@@ -11,7 +11,7 @@ namespace game{
     }
 
     int GameCheckers::start(void){
-        Logger::do_log("GameCheckers::start called (" + Logger::ptr_to_string(this) + ")", Logger::Level::TRACE);
+        Logger::do_log("GameCheckers::start called (" + Logger::ptr_to_string(this) + ")", Logger::Level::INFO);
 
         std::deque<std::shared_ptr<Checker>> player_1_checkers;
         std::deque<std::shared_ptr<Checker>> player_2_checkers;
@@ -64,17 +64,17 @@ namespace game{
     }
     
     void GameCheckers::make_move_to(const Coord &old_coord, const Coord &new_coord){
-        Logger::do_log("GameCheckers::make_move_to called (" + Logger::ptr_to_string(this) + ")", Logger::Level::TRACE);
+        Logger::do_log("GameCheckers::make_move_to called (" + Logger::ptr_to_string(this) + ")", Logger::Level::INFO);
 
         // check if coords are right;
         if (!m_game_filed.coord_in_game_field(new_coord)){
+            std::string error_msg = "Move is out of game field range! Move coord: " + new_coord.to_string();
+
             Logger::do_log("GameCheckers::make_move_to (" + Logger::ptr_to_string(this) + ") throw WrongCheckerMoveException" +
-                "Coord {" + std::to_string(new_coord.coordX) + "; " + std::to_string(new_coord.coordY) + "} is out of game field range!",
-                Logger::Level::ERROR
+                error_msg, Logger::Level::ERROR
             );
 
-            throw WrongCheckerMoveException("Move is out of game field! ({" + std::to_string(new_coord.coordX) + 
-                "; " + std::to_string(new_coord.coordY) + "})");
+            throw WrongCheckerMoveException(error_msg);
         }
 
         Player *current_player;
@@ -121,7 +121,7 @@ namespace game{
     }
 
     void GameCheckers::change_turn(void){
-        Logger::do_log("GameCheckers::change_turn called (" + Logger::ptr_to_string(this) + ")", Logger::Level::TRACE);
+        Logger::do_log("GameCheckers::change_turn called (" + Logger::ptr_to_string(this) + ")", Logger::Level::INFO);
 
         std::string log_current_turn;
         switch(m_current_move){
@@ -139,7 +139,7 @@ namespace game{
     }
 
     void GameCheckers::get_move_coord(Coord &old_coord, Coord &new_coord) const{
-        Logger::do_log("GameCheckers::get_move_coord called (" + Logger::ptr_to_string(this) + ")", Logger::Level::TRACE);
+        Logger::do_log("GameCheckers::get_move_coord called (" + Logger::ptr_to_string(this) + ")", Logger::Level::INFO);
 
         std::cout << "Old checker coord (2 numbers): "; 
         std::cin >> old_coord.coordX >> old_coord.coordY;
@@ -149,7 +149,7 @@ namespace game{
     }
 
     void GameCheckers::output_current_turn_msg(void){
-        Logger::do_log("GameCheckers::output_current_turn_msg called (" + Logger::ptr_to_string(this) + ")", Logger::Level::TRACE);
+        Logger::do_log("GameCheckers::output_current_turn_msg called (" + Logger::ptr_to_string(this) + ")", Logger::Level::INFO);
         switch(m_current_move){
         case CurrentMove::PLAYER_1:
             std::wcout << L"Current turn: " << m_player_1->get_nickname() << std::endl;
@@ -167,7 +167,7 @@ namespace game{
     }
 
     bool GameCheckers::enemies_in_line(const Coord &checker_coord, std::vector<Coord> &enemies_coord) const{
-        Logger::do_log("GameCheckers::enemies_in_line called (" + Logger::ptr_to_string(this) + ")", Logger::Level::TRACE);
+        Logger::do_log("GameCheckers::enemies_in_line called (" + Logger::ptr_to_string(this) + ")", Logger::Level::INFO);
         enemies_coord.clear();
         
         Player *enemy;
@@ -233,8 +233,7 @@ namespace game{
                 Logger::do_log("GameCheckers::enemies_in_line checked coord: " + checked_coord.to_string(), Logger::Level::DEBUG);
                 if (enemy->contain_checker(checked_coord)){
                     enemies_coord.push_back(checked_coord);
-                    Logger::do_log("GameCheckers::enemies_in_line added new enemy checker with coord: {" +
-                        std::to_string(checked_coord.coordX) + "; " + std::to_string(checked_coord.coordY) + "}",
+                    Logger::do_log("GameCheckers::enemies_in_line added new enemy checker with coord: " + checked_coord.to_string(),
                         Logger::Level::DEBUG
                     );
                 }
@@ -246,11 +245,16 @@ namespace game{
     }
 
     void GameCheckers::move_simple_checker(const Coord &old_coord, const Coord &new_coord, Player *current_player){
+        Logger::do_log("GameCheckers::move_simple_checker called (" + Logger::ptr_to_string(this), Logger::Level::INFO);
+
+        std::string error_msg;
+        
         std::vector<Coord> enemies;
         Coord distance = new_coord - old_coord;
         Coord distance_module = {static_cast<short>(std::abs(distance.coordX)), static_cast<short>(std::abs(distance.coordY))};
         Coord max_checker_distance_to_move = Checker::get_max_distance_to_move();
         enemies_in_line(old_coord, enemies);
+
         // if there is right distance to move;
         if (distance_module == max_checker_distance_to_move){
             if (std::find(std::begin(enemies), std::end(enemies), new_coord) == std::end(enemies)){
@@ -271,11 +275,21 @@ namespace game{
                     current_player->make_move_to(old_coord, new_coord);
                 }
                 catch(const WrongCheckerMoveException &error){
+                    error_msg = error.what();
+
+                    Logger::do_log("GameCheckers::move_simple_checker (" + Logger::ptr_to_string(this) + " throw the WrongChecjerMoveException: "+
+                        error_msg, Logger::Level::ERROR
+                    );
+
                     throw error;
                 }
             }
             else{
-                std::string error_msg;
+                error_msg = "There is an enemy checker in coord " + new_coord.to_string();
+
+                Logger::do_log("GameCheckers::move_simple_checker (" + Logger::ptr_to_string(this) + " throw the WrongChecjerMoveException: "+
+                    error_msg, Logger::Level::ERROR
+                );
 
                 throw WrongCheckerMoveException(error_msg);
             }
@@ -294,23 +308,42 @@ namespace game{
                     }
                     catch(const WrongCheckerMoveException &error){
                         current_player->make_move_to(enemy_coord, old_coord);
+
+                        std::string error_msg = error.what();
+
+                        Logger::do_log("GameCheckers::move_simple_checker (" + Logger::ptr_to_string(this) + " throw the WrongChecjerMoveException: "+
+                            error_msg, Logger::Level::ERROR
+                        );
+
                         throw error;
                     }
                 }
                 else{
-                    std::string error_msg;
+                    error_msg = "There is checker on " + new_coord.to_string() + ", or/and enemy on " + enemy_coord.to_string() + " does not exist!";
+
+                    Logger::do_log("GameCheckers::move_simple_checker (" + Logger::ptr_to_string(this) + " throw the WrongChecjerMoveException: "+
+                        error_msg, Logger::Level::ERROR
+                    );
 
                     throw WrongCheckerMoveException(error_msg);
                 }
             }
             else{
-                std::string error_msg;
+                error_msg = "There isn't enemies you can kill!";
+
+                Logger::do_log("GameCheckers::move_simple_checker (" + Logger::ptr_to_string(this) + " throw the WrongChecjerMoveException: "+
+                    error_msg, Logger::Level::ERROR
+                );
 
                 throw WrongCheckerMoveException(error_msg);
             }
         }
         else{
-            std::string error_msg;
+            error_msg = "Impossible move for checker!";
+
+            Logger::do_log("GameCheckers::move_simple_checker (" + Logger::ptr_to_string(this) + " throw the WrongChecjerMoveException: "+
+                error_msg, Logger::Level::ERROR
+            );
 
             throw WrongCheckerMoveException(error_msg);
         }
