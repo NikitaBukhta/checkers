@@ -51,10 +51,10 @@ namespace game{
                 try{
                     get_move_coord(old_coord, new_coord);
 
-                    checkers_need_to_hit(checkers_must_move);
+                    m_need_to_hit = checkers_need_to_hit(checkers_must_move);
 
                     // if there is checker that must to hit;
-                    if (checkers_must_move.size() != 0){
+                    if (m_need_to_hit){
                         // if the current checker cannot to hit;
                         if (std::find(std::begin(checkers_must_move), std::end(checkers_must_move), old_coord) == std::end(checkers_must_move)){
                             std::string error_msg = "Hit is neccessary!";
@@ -71,7 +71,7 @@ namespace game{
                     break;
                 }
                 catch(const WrongCheckerMoveException &error){
-                    std::cerr << error.what() << std::endl << "Please, try again!";
+                    std::cerr << error.what() << std::endl << "Please, try again!" << std::endl;
                     // TODO: REMOVE THESE LINES IN RELEASE!
                     // TEMP! FOR CONSOLE DEBUG;
                     m_game_filed.draw_game_field();
@@ -268,8 +268,6 @@ namespace game{
         return enemies_coord.size() != 0;
     }
 
-    // TODO: fix bug:
-    //  if checker can make a move and must hit, it may not hit, but must;
     void GameCheckers::move_simple_checker(const Coord &old_coord, const Coord &new_coord, Player *current_player){
         std::thread(&Logger::do_log, "GameCheckers::move_simple_checker called (" + Logger::ptr_to_string(this), Logger::Level::INFO).detach();
 
@@ -281,8 +279,8 @@ namespace game{
         Coord max_checker_distance_to_move = Checker::get_max_distance_to_move();
         enemies_in_line(old_coord, enemies);
 
-        // if there is right distance to move;
-        if (distance_module == max_checker_distance_to_move){
+        // if there is right distance to move and we haven't to hit;
+        if (distance_module == max_checker_distance_to_move && !m_need_to_hit){
             if (std::find(std::begin(enemies), std::end(enemies), new_coord) == std::end(enemies)){
                 try{
                     switch(m_current_move){
@@ -375,7 +373,7 @@ namespace game{
         }
     }
 
-    void GameCheckers::checkers_need_to_hit(std::vector<Coord> &checkers) const{
+    bool GameCheckers::checkers_need_to_hit(std::vector<Coord> &checkers) const{
         std::thread(&Logger::do_log, "GameCheckers::checkers_need_to_hit called (" + Logger::ptr_to_string(this), Logger::Level::INFO).detach();
 
         Player *current_player;
@@ -483,5 +481,7 @@ namespace game{
                 Logger::Level::DEBUG
             ).detach();
         }
+
+        return checkers.size() != 0;
     }
 }

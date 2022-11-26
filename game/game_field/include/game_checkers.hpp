@@ -37,6 +37,8 @@ namespace game{
 
         CurrentMove m_current_move;
 
+        bool m_need_to_hit = false;
+
     public:
         GameCheckers(void);
         
@@ -106,7 +108,7 @@ namespace game{
          */
         void move_simple_checker(const Coord &old_coord, const Coord &new_coord, Player *current_player);
 
-        void checkers_need_to_hit(std::vector<Coord> &checkers) const;
+        bool checkers_need_to_hit(std::vector<Coord> &checkers) const;
     };
 }
 
