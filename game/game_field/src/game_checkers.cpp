@@ -419,7 +419,12 @@ namespace game{
                 ", distance: " + distance.to_string() + ", defence coord = " + defence_coord.to_string(), Logger::Level::DEBUG    
             ).detach();
 
-            return std::find(begin, end, defence_coord) != end;
+            return std::find(begin, end, defence_coord) != end || 
+                std::find_if(std::begin(current_checkers), std::end(current_checkers), 
+                    [&defence_coord](auto checker){ 
+                        return checker->get_current_coord() == defence_coord;
+                    }
+                ) != std::end(current_checkers);
         };
 
         Coord game_field_edge;
@@ -433,58 +438,36 @@ namespace game{
             temp_enemies_coord_vector.clear();
             enemies_in_line(checker_it->get_current_coord(), temp_enemies_coord_vector);
 
-            switch(checker_it->get_checker_type()){
-                case CheckerType::CHECKER:
-                    for (auto enemy_coord_it = std::begin(temp_enemies_coord_vector); enemy_coord_it != std::end(temp_enemies_coord_vector); ++enemy_coord_it){
-                        // check if we checker isn't in the game field edge;
-                        if (enemy_coord_it->coordX == 0 || enemy_coord_it->coordY == 0 || 
-                            enemy_coord_it->coordX == game_field_edge.coordX || enemy_coord_it->coordY == game_field_edge.coordY
-                            )
-                        {
-                            continue;
-                        }
-                        
-                        Coord distance = checker_it->get_current_coord() - *enemy_coord_it;
-                        Coord distance_mod = {static_cast<short>(std::abs(distance.coordX)), static_cast<short>(std::abs(distance.coordY))};
+            for (auto enemy_coord_it = std::begin(temp_enemies_coord_vector); enemy_coord_it != std::end(temp_enemies_coord_vector); ++enemy_coord_it){
+                // check if we checker isn't in the game field edge;
+                if (enemy_coord_it->coordX == 0 || enemy_coord_it->coordY == 0 || 
+                    enemy_coord_it->coordX == game_field_edge.coordX || enemy_coord_it->coordY == game_field_edge.coordY
+                    )
+                {
+                    continue;
+                }
+                
+                if (checker_it->get_checker_type() == CheckerType::CHECKER){
+                    Coord distance = checker_it->get_current_coord() - *enemy_coord_it;
+                    Coord distance_mod = {static_cast<short>(std::abs(distance.coordX)), static_cast<short>(std::abs(distance.coordY))};
 
-                        // check if we can hit;
-                        if (distance_mod.coordX != 1 || distance_mod.coordY != 1){
-                            continue;
-                        }
-                        
-                        // check if checker is under defence;
-                        auto hit_checker = enemy_coord_it;
-                        std::thread(&Logger::do_log, "GameCheckers::checkers_need_to_hit (" + Logger::ptr_to_string(this) + 
-                            ". CHECKER. Checked defence coord for " + hit_checker->to_string(), Logger::Level::DEBUG).detach();
-                        if (!check_for_defence(checker_it->get_current_coord(), *hit_checker, ++enemy_coord_it, std::end(temp_enemies_coord_vector))){
-                            checkers.push_back(checker_it->get_current_coord());
-                            enemy_coord_it = hit_checker;   // return iterator back;
-
-                            break;
-                        }
-
-                        enemy_coord_it = hit_checker;   // return iterator back;
+                    // check if we can hit;
+                    if (distance_mod.coordX != 1 || distance_mod.coordY != 1){
+                        continue;
                     }
+                }
+                // check if checker is under defence;
+                auto hit_checker = enemy_coord_it;
+                std::thread(&Logger::do_log, "GameCheckers::checkers_need_to_hit (" + Logger::ptr_to_string(this) + 
+                    "). Checked defence coord for " + hit_checker->to_string(), Logger::Level::DEBUG).detach();
+                if (!check_for_defence(checker_it->get_current_coord(), *hit_checker, ++enemy_coord_it, std::end(temp_enemies_coord_vector))){
+                    checkers.push_back(checker_it->get_current_coord());
+                    enemy_coord_it = hit_checker;   // return iterator back;
 
                     break;
+                }
 
-                case CheckerType::QUEEN:
-                    for (auto enemy_coord_it = std::begin(temp_enemies_coord_vector); enemy_coord_it != std::end(temp_enemies_coord_vector); ++enemy_coord_it){
-                        // check if we checker isn't in the game field edge;
-                        if (enemy_coord_it->coordX == 0 || enemy_coord_it->coordY == 0 || 
-                            enemy_coord_it->coordX == game_field_edge.coordX || enemy_coord_it->coordY == game_field_edge.coordY
-                            )
-                        {
-                            continue;
-                        }
-                        
-                        if (!check_for_defence(checker_it->get_current_coord(), *enemy_coord_it, enemy_coord_it, std::end(temp_enemies_coord_vector))){
-                            checkers.push_back(checker_it->get_current_coord());
-                            break;
-                        }
-                    }
-
-                    break;
+                enemy_coord_it = hit_checker;   // return iterator back;
             }
         }
 
