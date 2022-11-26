@@ -373,6 +373,7 @@ namespace game{
         }
     }
 
+    // TODO: try to do optimization;
     bool GameCheckers::checkers_need_to_hit(std::vector<Coord> &checkers) const{
         std::thread(&Logger::do_log, "GameCheckers::checkers_need_to_hit called (" + Logger::ptr_to_string(this), Logger::Level::INFO).detach();
 
