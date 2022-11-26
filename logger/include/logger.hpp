@@ -11,6 +11,15 @@
 #include <sstream>
 
 class Logger{
+public:
+    enum class Level{
+        TRACE,
+        DEBUG,
+        INFO,
+        WARN,
+        ERROR,
+        FATAL
+    };
 
 private:
     static std::mutex m_console_output_mutex;
@@ -20,21 +29,27 @@ private:
 
     static std::fstream m_log_file;
 
+    static bool m_output_logs_to_console;
+    static bool m_logging_on;
+
+    static Level m_min_lvl;
+    static Level m_max_lvl;
+
 public:
-    enum class Level{
-        FATAL,
-        ERROR,
-        WARN,
-        INFO,
-        DEBUG,
-        TRACE
-    };
 
     static void do_log(const std::string &msg, Level log_lvl = Level::TRACE);
 
     static void set_file_name(const std::string &file_name);
 
     static std::string ptr_to_string(const void *const ptr);
+
+    static void turn_output_logs_to_console(bool turn) noexcept;
+
+    static void turn_logging(bool turn) noexcept;
+
+    static void set_min_lvl(Level min_lvl) noexcept;
+
+    static void set_max_lvl(Level max_lvl) noexcept;
 
 private:
     Logger(void) = delete;
