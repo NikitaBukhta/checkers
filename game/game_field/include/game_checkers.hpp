@@ -105,6 +105,8 @@ namespace game{
          *  Throw WrongCheckerMoveException if move is impossible. You can read more information in errors details.
          */
         void move_simple_checker(const Coord &old_coord, const Coord &new_coord, Player *current_player);
+
+        void checkers_need_to_hit(std::vector<Coord> &checkers) const;
     };
 }
 

@@ -44,10 +44,29 @@ namespace game{
 
             output_current_turn_msg();
 
+            std::vector<Coord> checkers_must_move;
+
             // while right move is not completed;
             while (true){
                 try{
                     get_move_coord(old_coord, new_coord);
+
+                    checkers_need_to_hit(checkers_must_move);
+
+                    // if there is checker that must to hit;
+                    if (checkers_must_move.size() != 0){
+                        // if the current checker cannot to hit;
+                        if (std::find(std::begin(checkers_must_move), std::end(checkers_must_move), old_coord) == std::end(checkers_must_move)){
+                            std::string error_msg = "Hit is neccessary!";
+
+                            Logger::do_log("GameChecker::start (" + Logger::ptr_to_string(this) + ") throw the WrongCheckerMoveException: " + error_msg,
+                                Logger::Level::ERROR
+                            );
+
+                            throw WrongCheckerMoveException(error_msg);
+                        }
+                    }
+
                     make_move_to(old_coord, new_coord);
                     break;
                 }
@@ -59,7 +78,8 @@ namespace game{
                     output_current_turn_msg();
                 }
             }
-
+            
+            checkers_must_move.clear();
             change_turn();
         }
 
@@ -248,6 +268,8 @@ namespace game{
         return enemies_coord.size() != 0;
     }
 
+    // TODO: fix bug:
+    //  if checker can make a move and must hit, it may not hit, but must;
     void GameCheckers::move_simple_checker(const Coord &old_coord, const Coord &new_coord, Player *current_player){
         std::thread(&Logger::do_log, "GameCheckers::move_simple_checker called (" + Logger::ptr_to_string(this), Logger::Level::INFO).detach();
 
@@ -350,6 +372,129 @@ namespace game{
             ).detach();
 
             throw WrongCheckerMoveException(error_msg);
+        }
+    }
+
+    void GameCheckers::checkers_need_to_hit(std::vector<Coord> &checkers) const{
+        Logger::do_log("GameCheckers::checkers_need_to_hit called (" + Logger::ptr_to_string(this), Logger::Level::INFO);
+
+        Player *current_player;
+        Player *enemy_player;
+
+        switch(m_current_move){
+            case CurrentMove::PLAYER_1:
+                current_player = m_player_1.get();
+                enemy_player = m_player_2.get();
+                break;
+            
+            case CurrentMove::PLAYER_2:
+                current_player = m_player_2.get();
+                enemy_player = m_player_2.get();
+                break;
+        }
+        
+        std::deque<std::shared_ptr<Checker>> current_checkers;  // all checkers that can be moved;
+        current_player->get_checkers(current_checkers);
+
+        /* Description:
+         * check if enemy_checker is under defence;
+         *
+         * Args:
+         *  current_checker - checker that we move;
+         *  enemy_checker - checker we want to kill;
+         *  begin - begin of enemies array;
+         *  end - end of enemies array;
+         * 
+         * Return values:
+         *  return true if defence was found;
+         *  return false if not;
+         */
+        auto check_for_defence = [](Coord current_checker, Coord enemy_checker, auto begin, auto end){
+            Coord distance = current_checker - enemy_checker;
+            Coord defence_coord;
+            if (distance.coordX < 0 && distance.coordY < 0){
+                defence_coord = Coord{static_cast<short>(enemy_checker.coordX - 1), static_cast<short>(enemy_checker.coordY - 1)};
+            }
+            else if (distance.coordX > 0 && distance.coordY < 0){
+                defence_coord = Coord{static_cast<short>(enemy_checker.coordX + 1), static_cast<short>(enemy_checker.coordY - 1)};
+            }
+            else if (distance.coordX < 0 && distance.coordY > 0){
+                defence_coord = Coord{static_cast<short>(enemy_checker.coordX - 1), static_cast<short>(enemy_checker.coordY + 1)};
+            }
+            else if (distance.coordX > 0 && distance.coordY > 0){
+                defence_coord = Coord{static_cast<short>(enemy_checker.coordX + 1), static_cast<short>(enemy_checker.coordY + 1)};
+            }
+
+            return std::find(begin, end, defence_coord) != end;
+        };
+
+        Coord game_field_edge;
+        {
+            Size game_field_size = m_game_filed.get_game_field_size();
+            game_field_edge = Coord{static_cast<short>(game_field_size.width - 1), static_cast<short>(game_field_size.height)};
+        }
+        for (auto checker_it : current_checkers){
+            std::vector<Coord> temp_enemies_coord_vector;
+            enemies_in_line(checker_it->get_current_coord(), temp_enemies_coord_vector);
+
+            switch(checker_it->get_checker_type()){
+                case CheckerType::CHECKER:
+                    for (auto enemy_coord_it = std::begin(temp_enemies_coord_vector); enemy_coord_it != std::end(temp_enemies_coord_vector); ++enemy_coord_it){
+                        // check if we checker isn't in the game field edge;
+                        if (enemy_coord_it->coordX == 0 || enemy_coord_it->coordY == 0 || 
+                            enemy_coord_it->coordX == game_field_edge.coordX || enemy_coord_it->coordY == game_field_edge.coordY
+                            )
+                        {
+                            continue;
+                        }
+                        
+                        Coord distance = checker_it->get_current_coord() - *enemy_coord_it;
+                        Coord distance_mod = {static_cast<short>(std::abs(distance.coordX)), static_cast<short>(std::abs(distance.coordY))};
+
+                        // check if we can hit;
+                        if (distance_mod.coordX != 1 || distance_mod.coordY != 1){
+                            continue;
+                        }
+                        
+                        if (!check_for_defence(checker_it->get_current_coord(), *enemy_coord_it, enemy_coord_it, std::end(temp_enemies_coord_vector))){
+                            checkers.push_back(checker_it->get_current_coord());
+                            break;
+                        }
+                    }
+
+                    break;
+
+                case CheckerType::QUEEN:
+                    for (auto enemy_coord_it = std::begin(temp_enemies_coord_vector); enemy_coord_it != std::end(temp_enemies_coord_vector); ++enemy_coord_it){
+                        // check if we checker isn't in the game field edge;
+                        if (enemy_coord_it->coordX == 0 || enemy_coord_it->coordY == 0 || 
+                            enemy_coord_it->coordX == game_field_edge.coordX || enemy_coord_it->coordY == game_field_edge.coordY
+                            )
+                        {
+                            continue;
+                        }
+                        
+                        if (!check_for_defence(checker_it->get_current_coord(), *enemy_coord_it, enemy_coord_it, std::end(temp_enemies_coord_vector))){
+                            checkers.push_back(checker_it->get_current_coord());
+                            break;
+                        }
+                    }
+
+                    break;
+            }
+        }
+
+        Logger::do_log("GameCheckers::checkers_need_to_hit (" + Logger::ptr_to_string(this) + 
+            "). Checkers.size() = " + std::to_string(checkers.size()),
+            Logger::Level::DEBUG    
+        );
+
+        size_t i = 0;
+        for (auto enemies_coord_it : checkers){
+            Logger::do_log("GameCheckers::checkers_need_to_hit (" + Logger::ptr_to_string(this) + 
+                ". Checker #" + std::to_string(i++) + " coord: " + enemies_coord_it.to_string(),
+                Logger::Level::DEBUG
+            );
         }
     }
 }
