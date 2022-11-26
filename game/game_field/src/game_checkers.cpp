@@ -376,7 +376,7 @@ namespace game{
     }
 
     void GameCheckers::checkers_need_to_hit(std::vector<Coord> &checkers) const{
-        Logger::do_log("GameCheckers::checkers_need_to_hit called (" + Logger::ptr_to_string(this), Logger::Level::INFO);
+        std::thread(&Logger::do_log, "GameCheckers::checkers_need_to_hit called (" + Logger::ptr_to_string(this), Logger::Level::INFO).detach();
 
         Player *current_player;
         Player *enemy_player;
@@ -409,21 +409,15 @@ namespace game{
          *  return true if defence was found;
          *  return false if not;
          */
-        auto check_for_defence = [](Coord current_checker, Coord enemy_checker, auto begin, auto end){
+        auto check_for_defence = [&current_checkers, this](Coord current_checker, Coord enemy_checker, auto begin, auto end){
             Coord distance = current_checker - enemy_checker;
-            Coord defence_coord;
-            if (distance.coordX < 0 && distance.coordY < 0){
-                defence_coord = Coord{static_cast<short>(enemy_checker.coordX - 1), static_cast<short>(enemy_checker.coordY - 1)};
-            }
-            else if (distance.coordX > 0 && distance.coordY < 0){
-                defence_coord = Coord{static_cast<short>(enemy_checker.coordX + 1), static_cast<short>(enemy_checker.coordY - 1)};
-            }
-            else if (distance.coordX < 0 && distance.coordY > 0){
-                defence_coord = Coord{static_cast<short>(enemy_checker.coordX - 1), static_cast<short>(enemy_checker.coordY + 1)};
-            }
-            else if (distance.coordX > 0 && distance.coordY > 0){
-                defence_coord = Coord{static_cast<short>(enemy_checker.coordX + 1), static_cast<short>(enemy_checker.coordY + 1)};
-            }
+
+            Coord defence_coord = enemy_checker - distance;
+
+            std::thread(&Logger::do_log, "GameCheckers::checkers_need_to_hit::check_for_defence (" + Logger::ptr_to_string(this) + 
+                "). Current checker: " + current_checker.to_string() + ", enemy checker: " + enemy_checker.to_string() + 
+                ", distance: " + distance.to_string() + ", defence coord = " + defence_coord.to_string(), Logger::Level::DEBUG    
+            ).detach();
 
             return std::find(begin, end, defence_coord) != end;
         };
@@ -433,8 +427,10 @@ namespace game{
             Size game_field_size = m_game_filed.get_game_field_size();
             game_field_edge = Coord{static_cast<short>(game_field_size.width - 1), static_cast<short>(game_field_size.height)};
         }
+
+        std::vector<Coord> temp_enemies_coord_vector;
         for (auto checker_it : current_checkers){
-            std::vector<Coord> temp_enemies_coord_vector;
+            temp_enemies_coord_vector.clear();
             enemies_in_line(checker_it->get_current_coord(), temp_enemies_coord_vector);
 
             switch(checker_it->get_checker_type()){
@@ -456,10 +452,18 @@ namespace game{
                             continue;
                         }
                         
-                        if (!check_for_defence(checker_it->get_current_coord(), *enemy_coord_it, enemy_coord_it, std::end(temp_enemies_coord_vector))){
+                        // check if checker is under defence;
+                        auto hit_checker = enemy_coord_it;
+                        std::thread(&Logger::do_log, "GameCheckers::checkers_need_to_hit (" + Logger::ptr_to_string(this) + 
+                            ". CHECKER. Checked defence coord for " + hit_checker->to_string(), Logger::Level::DEBUG).detach();
+                        if (!check_for_defence(checker_it->get_current_coord(), *hit_checker, ++enemy_coord_it, std::end(temp_enemies_coord_vector))){
                             checkers.push_back(checker_it->get_current_coord());
+                            enemy_coord_it = hit_checker;   // return iterator back;
+
                             break;
                         }
+
+                        enemy_coord_it = hit_checker;   // return iterator back;
                     }
 
                     break;
@@ -484,17 +488,17 @@ namespace game{
             }
         }
 
-        Logger::do_log("GameCheckers::checkers_need_to_hit (" + Logger::ptr_to_string(this) + 
+        std::thread(&Logger::do_log, "GameCheckers::checkers_need_to_hit (" + Logger::ptr_to_string(this) + 
             "). Checkers.size() = " + std::to_string(checkers.size()),
             Logger::Level::DEBUG    
-        );
+        ).detach();
 
         size_t i = 0;
         for (auto enemies_coord_it : checkers){
-            Logger::do_log("GameCheckers::checkers_need_to_hit (" + Logger::ptr_to_string(this) + 
+            std::thread(&Logger::do_log, "GameCheckers::checkers_need_to_hit (" + Logger::ptr_to_string(this) + 
                 ". Checker #" + std::to_string(i++) + " coord: " + enemies_coord_it.to_string(),
                 Logger::Level::DEBUG
-            );
+            ).detach();
         }
     }
 }
