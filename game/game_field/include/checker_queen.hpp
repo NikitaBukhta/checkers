@@ -6,6 +6,10 @@
 namespace game{
     class CheckerQueen : public Checker{
     public:
+        /* Args:
+         *  coord - current checker coord;
+         *  color - checker color;
+         */
         CheckerQueen(Coord coord = {}, Color color = Color::NO_COLOR) : Checker(coord, color, CheckerType::QUEEN) {};
 
         CheckerQueen(const CheckerQueen &other) = default;

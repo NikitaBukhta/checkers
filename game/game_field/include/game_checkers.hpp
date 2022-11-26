@@ -39,20 +39,71 @@ namespace game{
 
     public:
         GameCheckers(void);
-
+        
+        /* Description:
+         *  This method start game checkers;
+         */
         int start(void) override;
 
     private:
+        /* Discription:
+         *  Move checker from A to B coord;
+         *
+         * Args:
+         *  old_coord - checker's first coord;
+         *  new_coord - checker's new coord we move to;
+         * 
+         * Errors:
+         *  Throw WrongCheckerMoveException if:
+         *      * new coord is out of range;
+         *      * checker wasn't found;
+         *      * move is imposible;
+         */
         void make_move_to(const Coord &old_coord, const Coord &new_coord);
 
+        /* Description:
+         *  Change current turn for players;
+         */
         void change_turn(void);
 
+        /* Description:
+         *  Write in vars user input for moving the checker;
+         *
+         * Args:
+         *  old_coord - checker's coord we want to move;
+         *  new_coord - checker's new coord;
+         */
         void get_move_coord(Coord &old_coord, Coord &new_coord) const;
 
+        /* Description:
+         *  Display current turn on the screen;
+         */
         void output_current_turn_msg(void);
 
+        /* Description:
+         *  Check if there are enemies on the one line with checker we want to move;
+         *
+         * Args:
+         *  checker_coord - checker we want to move;
+         *  enemies_coord - list of all enemies are in line with our checker;
+         * 
+         * Return values:
+         *  return true if enemies were found;
+         *  return false if enemies were not found;
+         */
         bool enemies_in_line(const Coord &checker_coord, std::vector<Coord> &enemies_coord) const;
 
+        /* Description:
+         *  move simple checker from A to B;
+         *
+         * Args:
+         *  old_coord - old checker coord we want to move;
+         *  new_coord - new checker coord we want to move;
+         *  current_player - player making the current turn. Their checker we will move;
+         * 
+         * Errors:
+         *  Throw WrongCheckerMoveException if move is impossible. You can read more information in errors details.
+         */
         void move_simple_checker(const Coord &old_coord, const Coord &new_coord, Player *current_player);
     };
 }

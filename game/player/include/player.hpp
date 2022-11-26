@@ -54,6 +54,16 @@ namespace game{
          */
         void make_move_to(const Coord &old_coord, const Coord &new_coord);
 
+        /* Description:
+         *  Check if current player contains the checker;
+         *
+         * Args:
+         *  coord - checker coord we want to find;
+         * 
+         * Return values:
+         *  return true if player contains the checker;
+         *  return false if not;
+         */
         bool contain_checker(const Coord &coord) const;
 
     private:
@@ -70,6 +80,18 @@ namespace game{
          */
         void set_checkers_start_coord(Color color);
 
+        /* Description:
+         *  Check if current player contains the checker;
+         *
+         * Args:
+         *  coord - checker coord we want to find;
+         *  checker_it - written value to save current checker_it. Retured std::end(m_checkers)
+         *      if checker was not found;
+         * 
+         * Return values:
+         *  return true if player contains the checker;
+         *  return false if not;
+         */
         bool contain_checker(const Coord &coord, std::deque<std::shared_ptr<Checker>>::const_iterator &checker_it) const;
     };
 }

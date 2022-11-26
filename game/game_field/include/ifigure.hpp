@@ -33,6 +33,9 @@ namespace game{
 
         Coord operator* (const int value) const;
 
+        /* Description:
+         *  Return coords in string format;
+         */
         std::string to_string(void) const;
     };
 

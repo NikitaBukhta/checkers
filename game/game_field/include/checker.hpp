@@ -72,10 +72,19 @@ namespace game{
          */
         void set_color(Color color) noexcept;
 
+        /* Description:
+         *  Return color as a string;
+         */
         std::string color_to_string(void) const override;
 
+        /* Description:
+         *  Return type of checker;
+         */
         CheckerType get_checker_type(void) const override;
 
+        /* Description:
+         *  Return max distance that checker can move;
+         */
         static Coord get_max_distance_to_move(void);
     };
 }
