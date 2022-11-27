@@ -66,6 +66,17 @@ namespace game{
          */
         bool contain_checker(const Coord &coord) const;
 
+        /* Description:
+         *  remove checker from checker list with specific coord;
+         *
+         * Args:
+         *  coord - specific coord where checker is;
+         * 
+         * Errors:
+         *  throw std::out_of_range if no checkers found;
+         */
+        void remove_checker(const Coord &coord);
+
     private:
         /* Description:
          *  Set start coord for checker, depends on that color;

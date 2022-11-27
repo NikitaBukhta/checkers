@@ -171,4 +171,33 @@ namespace game{
         
         return ret;
     }
+
+    void Player::remove_checker(const Coord &coord){
+        std::thread(&Logger::do_log, "Player::remove_checker called (" + Logger::ptr_to_string(this) + ")", Logger::Level::INFO).detach();
+        
+        auto remove_element_it = std::remove_if(std::begin(m_checkers), std::end(m_checkers), 
+            [&coord](std::shared_ptr<Checker> &checker){
+                Logger::do_log("Player::remove_checker remove_if. Shared_ptr checker to " + Logger::ptr_to_string(checker.get()) + 
+                    ") count: " + std::to_string(checker.use_count()), Logger::Level::DEBUG);
+                return checker->get_current_coord() == coord;
+            }
+        );
+
+        if (remove_element_it == std::end(m_checkers)){
+            throw std::out_of_range("No checkers found with coord " + coord.to_string());
+        }
+
+        m_checkers.erase(remove_element_it);
+        m_checkers.shrink_to_fit();
+        
+        Logger::do_log("Player::remove_checker (" + Logger::ptr_to_string(this) + "). m_checkers_size = " + std::to_string(m_checkers.size()), Logger::Level::DEBUG);
+        size_t i = 0;
+        for (auto &checker_it : m_checkers){
+            Logger::do_log("Player::remove_checker (" + Logger::ptr_to_string(this) + "). Checker#" + std::to_string(i++) +
+                ": " + Logger::ptr_to_string(checker_it.get()) + ") coord " + checker_it->get_current_coord().to_string() + 
+                ", color " + checker_it->color_to_string() + ", ptrs count: " + std::to_string(checker_it.use_count()),
+                Logger::Level::DEBUG
+            );
+        }
+    }
 }

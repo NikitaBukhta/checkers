@@ -108,7 +108,20 @@ namespace game{
          */
         void move_simple_checker(const Coord &old_coord, const Coord &new_coord, Player *current_player);
 
+        /* Description:
+         *  Check which checkers must to hit;
+         *
+         * Args:
+         *  checkers - writable value which will contain a checkers coord that could make a move.
+         *      If checkers size is 0, no checkers can a kill the other;
+         * 
+         * Return values:
+         *  return true if there are checkers that must to hit the other;
+         *  return false if not;
+         */
         bool checkers_need_to_hit(std::vector<Coord> &checkers) const;
+
+        void kill_checker(const Coord &coord);
     };
 }
 

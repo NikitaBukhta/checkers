@@ -9,6 +9,10 @@ namespace game{
         this->m_checker_type = other.m_checker_type;
     }
 
+    Checker::~Checker(void){
+        std::thread(&Logger::do_log, "Checker destructor called (" + Logger::ptr_to_string(this) + ")", Logger::Level::INFO).detach();
+    }
+
     void Checker::make_move_to(const Coord &coord){
         std::thread(&Logger::do_log,"Checker::make_move_to (" + Logger::ptr_to_string(this) + ")", Logger::Level::INFO).detach();
 

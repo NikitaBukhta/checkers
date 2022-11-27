@@ -23,6 +23,8 @@ namespace game{
 
         Checker(const Checker &other);
 
+        ~Checker(void);
+
         bool operator== (const Checker &other) const;
 
         bool operator!= (const Checker &other) const;

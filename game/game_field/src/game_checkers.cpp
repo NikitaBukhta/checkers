@@ -122,11 +122,10 @@ namespace game{
             switch(moving_checker->get_checker_type()){
                 case CheckerType::CHECKER:
                     move_simple_checker(old_coord, new_coord, current_player);
-                    // TODO: logic for moving checker with kill;
                     break;
                 
                 case CheckerType::QUEEN:
-                    // TODO: logic for moving checker with kill;
+                    // TODO: logic to move queen;
                     break;
                 
                 default:
@@ -328,7 +327,8 @@ namespace game{
                     try{
                         current_player->make_move_to(old_coord, enemy_coord);
                         current_player->make_move_to(enemy_coord, new_coord);
-                        // TODO: kill!
+                        
+                        kill_checker(enemy_coord);
                     }
                     catch(const WrongCheckerMoveException &error){
                         current_player->make_move_to(enemy_coord, old_coord);
@@ -484,5 +484,28 @@ namespace game{
         }
 
         return checkers.size() != 0;
+    }
+
+    void GameCheckers::kill_checker(const Coord &coord){
+        std::thread(&Logger::do_log, "GameCheckers::kill_checker called (" + Logger::ptr_to_string(this) + ")", Logger::Level::INFO).detach();
+
+        Player *enemy_player;
+
+        Logger::do_log("GameCheckers::kill_checker (" + Logger::ptr_to_string(this) + 
+            ". Current_move: " + (m_current_move == CurrentMove::PLAYER_1 ? "player_1" : "player_2"),
+            Logger::Level::DEBUG
+        );
+
+        switch(m_current_move){
+            case CurrentMove::PLAYER_1:
+                enemy_player = m_player_2.get();
+                break;
+
+            case CurrentMove::PLAYER_2:
+                enemy_player = m_player_1.get();
+                break;
+        }
+
+        enemy_player->remove_checker(coord);
     }
 }
