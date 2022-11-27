@@ -325,10 +325,13 @@ namespace game{
                     std::find(std::begin(enemies), std::end(enemies), enemy_coord) != std::end(enemies))
                 {
                     try{
-                        current_player->make_move_to(old_coord, enemy_coord);
-                        current_player->make_move_to(enemy_coord, new_coord);
+                        std::thread moving_th([&](){
+                            current_player->make_move_to(old_coord, enemy_coord);
+                            current_player->make_move_to(enemy_coord, new_coord);
+                        });
                         
-                        kill_checker(enemy_coord);
+                        std::thread(&GameCheckers::kill_checker, this, enemy_coord).join();
+                        moving_th.join();
                     }
                     catch(const WrongCheckerMoveException &error){
                         current_player->make_move_to(enemy_coord, old_coord);
@@ -491,10 +494,10 @@ namespace game{
 
         Player *enemy_player;
 
-        Logger::do_log("GameCheckers::kill_checker (" + Logger::ptr_to_string(this) + 
+        std::thread(&Logger::do_log, "GameCheckers::kill_checker (" + Logger::ptr_to_string(this) + 
             ". Current_move: " + (m_current_move == CurrentMove::PLAYER_1 ? "player_1" : "player_2"),
             Logger::Level::DEBUG
-        );
+        ).detach();
 
         switch(m_current_move){
             case CurrentMove::PLAYER_1:
