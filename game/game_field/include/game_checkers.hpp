@@ -121,6 +121,12 @@ namespace game{
          */
         bool checkers_need_to_hit(std::vector<Coord> &checkers) const;
 
+        /* Description:
+         *  remove checker from one player's checker list;
+         *
+         * Args:
+         *  coord - coord of checker we want to KILL;
+         */
         void kill_checker(const Coord &coord);
     };
 }
