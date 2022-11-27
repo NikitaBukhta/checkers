@@ -68,6 +68,11 @@ namespace game{
                     }
 
                     make_move_to(old_coord, new_coord);
+
+                    if (check_for_queen(new_coord)){
+
+                    }
+
                     break;
                 }
                 catch(const WrongCheckerMoveException &error){
@@ -139,6 +144,10 @@ namespace game{
             ).detach();
 
             throw error;
+        }
+
+        if (check_for_queen(new_coord)){
+            current_player->change_checker_type(new_coord, CheckerType::QUEEN);
         }
     }
 
@@ -510,5 +519,23 @@ namespace game{
         }
 
         enemy_player->remove_checker(coord);
+    }
+
+    bool GameCheckers::check_for_queen(const Coord &coord) const noexcept{
+        std::thread(&Logger::do_log, "GameChecker::check_for_queen called (" + Logger::ptr_to_string(this) + ")", Logger::Level::TRACE).detach();
+
+        short first_row_number = 0;
+        short last_row_number = m_game_filed.get_game_field_size().height - 1;
+
+        switch(m_current_move){
+            case CurrentMove::PLAYER_1:
+                return coord.coordY == last_row_number;
+            
+            case CurrentMove::PLAYER_2:
+                return coord.coordY == first_row_number;
+
+            default:
+                return false;
+        }
     }
 }

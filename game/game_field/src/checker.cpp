@@ -13,6 +13,16 @@ namespace game{
         std::thread(&Logger::do_log, "Checker destructor called (" + Logger::ptr_to_string(this) + ")", Logger::Level::INFO).detach();
     }
 
+    Checker::Checker(Coord coord, Color color, CheckerType checker_type){
+        m_current_coord = coord;
+        m_color = color;
+        m_checker_type = checker_type;
+    }
+
+    void Checker::set_checker_type(const CheckerType checker_type) noexcept{
+        m_checker_type = checker_type;
+    }
+
     void Checker::make_move_to(const Coord &coord){
         std::thread(&Logger::do_log,"Checker::make_move_to (" + Logger::ptr_to_string(this) + ")", Logger::Level::INFO).detach();
 

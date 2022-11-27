@@ -30,11 +30,9 @@ namespace game{
         bool operator!= (const Checker &other) const;
 
     protected:
-        Checker(Coord coord, Color color, CheckerType checker_type){
-            m_current_coord = coord;
-            m_color = color;
-            m_checker_type = checker_type;
-        }
+        Checker(Coord coord, Color color, CheckerType checker_type);
+
+        void set_checker_type(const CheckerType checker_type) noexcept;
 
     public:
         /* Descriptions:

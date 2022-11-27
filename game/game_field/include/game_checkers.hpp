@@ -128,6 +128,8 @@ namespace game{
          *  coord - coord of checker we want to KILL;
          */
         void kill_checker(const Coord &coord);
+
+        bool check_for_queen(const Coord &checker_coord) const noexcept;
     };
 }
 

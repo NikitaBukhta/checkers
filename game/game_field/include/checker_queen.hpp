@@ -14,6 +14,8 @@ namespace game{
 
         CheckerQueen(const CheckerQueen &other) = default;
 
+        CheckerQueen(const Checker &other);
+
         bool operator== (const CheckerQueen &other) const;
 
         bool operator!= (const CheckerQueen &other) const;

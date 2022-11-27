@@ -8,6 +8,7 @@
 #include "config.hpp"
 #include "wrong_checker_move_exception.hpp"
 #include "logger.hpp"
+#include "checker_queen.hpp"
 
 #include <deque>
 #include <vector>
@@ -76,6 +77,8 @@ namespace game{
          *  throw std::out_of_range if no checkers found;
          */
         void remove_checker(const Coord &coord);
+
+        void change_checker_type(const Coord &coord, const CheckerType checker_type);
 
     private:
         /* Description:

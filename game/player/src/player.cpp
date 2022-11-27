@@ -24,7 +24,8 @@ namespace game{
             checkers[i].reset(new Checker(*m_checkers[i].get()));
 
             std::thread(&Logger::do_log, "Checker #" + std::to_string(i) + " (" + Logger::ptr_to_string(&checkers[i]) +
-                ") color: " + checkers[i]->color_to_string() + "; Coord: " + checkers[i]->get_current_coord().to_string(), 
+                ") color: " + checkers[i]->color_to_string() + "; Coord: " + checkers[i]->get_current_coord().to_string() +
+                "; checker type: " + (checkers[i]->get_checker_type() == CheckerType::CHECKER ? "checker" : "queen"), 
                 Logger::Level::DEBUG
             ).detach();
         }
@@ -200,6 +201,34 @@ namespace game{
                 ", color " + checker_it->color_to_string() + ", ptrs count: " + std::to_string(checker_it.use_count()),
                 Logger::Level::DEBUG
             ).detach();
+        }
+    }
+
+    void Player::change_checker_type(const Coord &coord, const CheckerType checker_type){
+        std::thread(&Logger::do_log, "Player::change_checker_type called (" + Logger::ptr_to_string(this) + ")", Logger::Level::INFO).detach();
+
+        auto checker_it = std::find_if(std::begin(m_checkers), std::end(m_checkers), [&coord](std::shared_ptr<Checker> &checker){
+            return checker->get_current_coord() == coord;
+        });
+
+        if (checker_it == std::end(m_checkers)){
+            std::string error_msg = "no checker found with coord " + coord.to_string();
+
+            std::thread(&Logger::do_log, "Player::change_checker_type (" + Logger::ptr_to_string(this) 
+                + ") throw std::out_of_range exception: " + error_msg, Logger::Level::DEBUG
+            ).detach();
+
+            throw std::out_of_range(error_msg);
+        }
+
+        switch(checker_type){
+            case CheckerType::CHECKER:
+                checker_it->reset(new Checker((*checker_it)->get_current_coord(), (*checker_it)->get_color()));
+                break;
+            
+            case CheckerType::QUEEN:
+                checker_it->reset(new CheckerQueen(*checker_it->get()));
+                break;
         }
     }
 }
