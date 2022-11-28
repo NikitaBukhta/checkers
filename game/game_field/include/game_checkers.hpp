@@ -108,6 +108,8 @@ namespace game{
          */
         void move_simple_checker(const Coord &old_coord, const Coord &new_coord, Player *current_player);
 
+        void move_queen_checker(const Coord &old_coord, const Coord &new_coord, Player *current_player);
+
         /* Description:
          *  Check which checkers must to hit;
          *

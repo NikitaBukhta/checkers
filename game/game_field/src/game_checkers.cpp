@@ -16,8 +16,13 @@ namespace game{
         std::deque<std::shared_ptr<Checker>> player_1_checkers;
         std::deque<std::shared_ptr<Checker>> player_2_checkers;
 
+        m_player_2->change_checker_type(Coord{1, 5}, CheckerType::QUEEN);
+        m_player_1->change_checker_type(Coord{0, 2}, CheckerType::QUEEN);
+
         Coord old_coord;
         Coord new_coord;
+
+        std::vector<Coord> checkers_must_move;
         while (true){
             // Reset game field to update the screen;
             std::thread game_field_reset_th (&GameField::reset, &m_game_filed);
@@ -44,14 +49,12 @@ namespace game{
 
             output_current_turn_msg();
 
-            std::vector<Coord> checkers_must_move;
+            m_need_to_hit = checkers_need_to_hit(checkers_must_move);
 
             // while right move is not completed;
             while (true){
                 try{
                     get_move_coord(old_coord, new_coord);
-
-                    m_need_to_hit = checkers_need_to_hit(checkers_must_move);
 
                     // if there is checker that must to hit;
                     if (m_need_to_hit){
@@ -130,7 +133,7 @@ namespace game{
                     break;
                 
                 case CheckerType::QUEEN:
-                    // TODO: logic to move queen;
+                    move_queen_checker(old_coord, new_coord, current_player);
                     break;
                 
                 default:
@@ -385,6 +388,144 @@ namespace game{
         }
     }
 
+    void GameCheckers::move_queen_checker(const Coord &old_coord, const Coord &new_coord, Player* current_player){
+        std::thread(&Logger::do_log, "GameCheckers::move_queen_checker called (" + Logger::ptr_to_string(this) + ")", Logger::Level::INFO).detach();
+
+        if (!m_game_filed.coord_in_game_field(new_coord)){
+            std::string error_msg = "No right move coord! " + new_coord.to_string();
+            
+            std::thread(&Logger::do_log, "GameCheckers::move_queen_checker (" + Logger::ptr_to_string(this) 
+                + ") throw the WrongCheckerMoveException: " + error_msg, Logger::Level::ERROR
+            ).detach();
+
+            throw WrongCheckerMoveException(error_msg); 
+        }
+
+        std::vector<Coord> enemies;
+        if(enemies_in_line(old_coord, enemies)){
+            bool can_hit = false;
+
+            // sort to the closest enemy;
+            std::sort(std::begin(enemies), std::end(enemies), 
+                [&old_coord](const Coord &first, const Coord &second){
+                    short dist_1 = std::sqrt(std::pow(old_coord.coordX - first.coordX, 2) + std::pow(old_coord.coordY - first.coordY, 2));
+                    short dist_2 = std::sqrt(std::pow(old_coord.coordX - second.coordX, 2) + std::pow(old_coord.coordY - second.coordY, 2));
+
+                    return dist_1 < dist_2;
+                }
+            );
+
+            for (const auto &enemy_it : enemies){
+                std::thread(&Logger::do_log, "GameCheckers::move_queen_checker (" + Logger::ptr_to_string(this) + 
+                    "). Enemy coord: " + enemy_it.to_string(), Logger::Level::DEBUG
+                ).detach();   
+            }
+
+            // check if new_coord and enemy_coord in one way;
+            auto one_way_enemy_it = std::find_if(std::begin(enemies), std::end(enemies),
+                [&old_coord, &new_coord](const Coord &enemy_coord){
+                    Coord move_distance = old_coord - new_coord;
+                    Coord distance_to_enemy = old_coord - enemy_coord;
+                    return move_distance.coordX * distance_to_enemy.coordX > 0 && 
+                        move_distance.coordY * distance_to_enemy.coordY > 0;
+                }
+            );
+
+            if (m_need_to_hit){
+                if (one_way_enemy_it != std::end(enemies)){
+                    Coord steps;
+                    {
+                        Coord distance = {
+                            static_cast<short>(one_way_enemy_it->coordX - old_coord.coordX),
+                            static_cast<short>(one_way_enemy_it->coordY - old_coord.coordY)
+                        };
+
+                        steps = {
+                            distance.coordX > 0 ? short(1) : short(-1),
+                            distance.coordY > 0 ? short(1) : short(-1)
+                        };
+                    }
+
+                    Coord defence = {
+                        static_cast<short>(one_way_enemy_it->coordX + steps.coordX),
+                        static_cast<short>(one_way_enemy_it->coordY + steps.coordY)
+                    };
+
+                    if (std::find(std::begin(enemies), std::end(enemies), defence) == std::end(enemies)){
+                        while (defence != new_coord){
+                            defence = Coord{
+                                static_cast<short>(defence.coordX + steps.coordX),
+                                static_cast<short>(defence.coordY + steps.coordY)
+                            };
+
+                            std::thread(&Logger::do_log, "GameField::move_queen_checker (" + Logger::ptr_to_string(this) + 
+                                "). Checked defence coord: " + defence.to_string(), Logger::Level::DEBUG
+                            ).detach();
+
+                            if (std::find(std::begin(enemies), std::end(enemies), defence) != std::end(enemies)){
+                                std::string error_msg = "Impossible move! You cannot go throw the enemy!";
+
+                                std::thread(&Logger::do_log, "GameCheckers::move_queen_checker (" + Logger::ptr_to_string(this) 
+                                    + ") throw the WrongCheckerMoveException: " + error_msg, Logger::Level::ERROR
+                                ).detach();
+
+                                throw WrongCheckerMoveException(error_msg);
+                            }
+                        }
+                        
+                        std::thread move_checker_th(&Player::make_move_to, current_player, std::ref(old_coord), std::ref(new_coord));
+                        std::thread(&GameCheckers::kill_checker, this, std::ref(*one_way_enemy_it)).join();
+                        move_checker_th.join();
+                    }
+                    else{
+                        std::string error_msg = "Checker is under defence! Try to hit the other! (hit is neccessary)";
+
+                        std::thread(&Logger::do_log, "GameCheckers::move_queen_checker (" + Logger::ptr_to_string(this) 
+                            + ") throw the WrongCheckerMoveException: " + error_msg, Logger::Level::ERROR
+                        ).detach();
+
+                        throw WrongCheckerMoveException(error_msg);
+                    }
+                }
+                else{
+                    std::string error_msg = "Hit is neccessary!";
+
+                    std::thread(&Logger::do_log, "GameCheckers::move_queen_checker (" + Logger::ptr_to_string(this) 
+                        + ") throw the WrongCheckerMoveException: " + error_msg, Logger::Level::ERROR
+                    ).detach();
+
+                    throw WrongCheckerMoveException(error_msg);
+                }
+            }
+            else{
+                if (one_way_enemy_it != std::end(enemies)){
+                    Coord move_distance = old_coord - new_coord;
+                    Coord distance_to_enemy = old_coord - *one_way_enemy_it;
+                    
+                    // if we don't move throw the enemy;
+                    if (std::abs(move_distance.coordX) < std::abs(distance_to_enemy.coordX)){
+                        current_player->make_move_to(old_coord, new_coord);
+                    }
+                    else{
+                        std::string error_msg = "Impossible move! You cannot go throw the enemy!";
+
+                        std::thread(&Logger::do_log, "GameCheckers::move_queen_checker (" + Logger::ptr_to_string(this) 
+                            + ") throw the WrongCheckerMoveException: " + error_msg, Logger::Level::ERROR
+                        ).detach();
+
+                        throw WrongCheckerMoveException(error_msg);
+                    }
+                }
+                else{
+                    current_player->make_move_to(old_coord, new_coord);
+                }
+            }
+        }
+        else{
+            current_player->make_move_to(old_coord, new_coord);
+        }
+    }
+
     // TODO: try to do optimization;
     bool GameCheckers::checkers_need_to_hit(std::vector<Coord> &checkers) const{
         std::thread(&Logger::do_log, "GameCheckers::checkers_need_to_hit called (" + Logger::ptr_to_string(this), Logger::Level::INFO).detach();
@@ -421,9 +562,17 @@ namespace game{
          *  return false if not;
          */
         auto check_for_defence = [&current_checkers, this](Coord current_checker, Coord enemy_checker, auto begin, auto end){
-            Coord distance = current_checker - enemy_checker;
+            Coord distance = enemy_checker - current_checker;
 
-            Coord defence_coord = enemy_checker - distance;
+            Coord defence_coord = Coord{
+                distance.coordX > 0 ? static_cast<short>(enemy_checker.coordX + 1) : static_cast<short>(enemy_checker.coordX - 1),
+                distance.coordY > 0 ? static_cast<short>(enemy_checker.coordY + 1) : static_cast<short>(enemy_checker.coordY - 1)
+            };
+
+            // if checker on the edge, is under defence!
+            if (!m_game_filed.coord_in_game_field(defence_coord)){
+                return true;
+            }
 
             std::thread(&Logger::do_log, "GameCheckers::checkers_need_to_hit::check_for_defence (" + Logger::ptr_to_string(this) + 
                 "). Current checker: " + current_checker.to_string() + ", enemy checker: " + enemy_checker.to_string() + 
