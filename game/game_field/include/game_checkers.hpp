@@ -77,6 +77,10 @@ namespace game{
          */
         void get_move_coord(Coord &old_coord, Coord &new_coord) const;
 
+        void get_checker_to_move(Coord &coord) const;
+
+        void get_coord_move_to(Coord &coord) const;
+
         /* Description:
          *  Display current turn on the screen;
          */

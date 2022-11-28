@@ -16,13 +16,15 @@ namespace game{
         std::deque<std::shared_ptr<Checker>> player_1_checkers;
         std::deque<std::shared_ptr<Checker>> player_2_checkers;
 
-        m_player_2->change_checker_type(Coord{1, 5}, CheckerType::QUEEN);
-        m_player_1->change_checker_type(Coord{0, 2}, CheckerType::QUEEN);
+        //m_player_2->change_checker_type(Coord{1, 5}, CheckerType::QUEEN);
+        //m_player_1->change_checker_type(Coord{0, 2}, CheckerType::QUEEN);
 
         Coord old_coord;
         Coord new_coord;
 
         std::vector<Coord> checkers_must_move;
+
+        bool repeat_player_move = false;
         while (true){
             // Reset game field to update the screen;
             std::thread game_field_reset_th (&GameField::reset, &m_game_filed);
@@ -54,7 +56,13 @@ namespace game{
             // while right move is not completed;
             while (true){
                 try{
-                    get_move_coord(old_coord, new_coord);
+                    if (repeat_player_move){
+                        old_coord = new_coord;
+                        get_coord_move_to(new_coord);
+                    }
+                    else{
+                        get_move_coord(old_coord, new_coord);
+                    }
 
                     // if there is checker that must to hit;
                     if (m_need_to_hit){
@@ -62,18 +70,35 @@ namespace game{
                         if (std::find(std::begin(checkers_must_move), std::end(checkers_must_move), old_coord) == std::end(checkers_must_move)){
                             std::string error_msg = "Hit is neccessary!";
 
-                            Logger::do_log("GameChecker::start (" + Logger::ptr_to_string(this) + ") throw the WrongCheckerMoveException: " + error_msg,
+                            std::thread (&Logger::do_log, "GameChecker::start (" + Logger::ptr_to_string(this) + ") throw the WrongCheckerMoveException: " + error_msg,
                                 Logger::Level::ERROR
-                            );
+                            ).detach();
 
                             throw WrongCheckerMoveException(error_msg);
                         }
+
+                        make_move_to(old_coord, new_coord);
+                        checkers_must_move.clear();
+
+                        if (checkers_need_to_hit(checkers_must_move)){
+                            Logger::do_log("GameCheckers::start (" + Logger::ptr_to_string(this) + "). Check if additional hit is neccessary!", Logger::Level::DEBUG);
+                            repeat_player_move = std::find(std::begin(checkers_must_move), std::end(checkers_must_move), new_coord) != std::end(checkers_must_move);
+
+                            size_t i = 0;
+                            for (auto &checker_it : checkers_must_move){
+                                Logger::do_log("GameCheckers::start (" + Logger::ptr_to_string(this) + "). Checker must hit #" 
+                                    + std::to_string(i++) + ": coord = " + checker_it.to_string(), Logger::Level::DEBUG)
+                                ;
+                            }
+                        }
+                        else{
+                            Logger::do_log("GameCheckers::start (" + Logger::ptr_to_string(this) + "). Additional hit isn't neccessary!", Logger::Level::DEBUG);
+                            repeat_player_move = false;
+                        }
+                        //check_for_repeat_move_th.join();
                     }
-
-                    make_move_to(old_coord, new_coord);
-
-                    if (check_for_queen(new_coord)){
-
+                    else{
+                        make_move_to(old_coord, new_coord);
                     }
 
                     break;
@@ -87,8 +112,10 @@ namespace game{
                 }
             }
             
-            checkers_must_move.clear();
-            change_turn();
+            if (!repeat_player_move){
+                checkers_must_move.clear();
+                change_turn();
+            }
         }
 
         return 0;
@@ -176,11 +203,19 @@ namespace game{
         // TODO: change join to detach when logic changed to get pckg instead of console;
         std::thread(&Logger::do_log, "GameCheckers::get_move_coord called (" + Logger::ptr_to_string(this) + ")", Logger::Level::INFO).join();
 
-        std::cout << "Old checker coord (2 numbers): "; 
-        std::cin >> old_coord.coordX >> old_coord.coordY;
+        get_checker_to_move(old_coord);
 
+        get_coord_move_to(new_coord);
+    }
+
+    void GameCheckers::get_checker_to_move(Coord &coord) const{
+        std::cout << "Old checker coord (2 numbers): "; 
+        std::cin >> coord.coordX >> coord.coordY;
+    }
+
+    void GameCheckers::get_coord_move_to(Coord &coord) const{
         std::cout << "New checker coord (2 numbers): "; 
-        std::cin >> new_coord.coordX >> new_coord.coordY;
+        std::cin >> coord.coordX >> coord.coordY;
     }
 
     void GameCheckers::output_current_turn_msg(void){
