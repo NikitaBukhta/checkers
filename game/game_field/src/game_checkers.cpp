@@ -16,8 +16,8 @@ namespace game{
         std::deque<std::shared_ptr<Checker>> player_1_checkers;
         std::deque<std::shared_ptr<Checker>> player_2_checkers;
 
-        //m_player_2->change_checker_type(Coord{1, 5}, CheckerType::QUEEN);
-        //m_player_1->change_checker_type(Coord{0, 2}, CheckerType::QUEEN);
+        m_player_2->change_checker_type(Coord{1, 5}, CheckerType::QUEEN);
+        m_player_1->change_checker_type(Coord{0, 2}, CheckerType::QUEEN);
 
         Coord old_coord;
         Coord new_coord;
@@ -485,8 +485,14 @@ namespace game{
                         static_cast<short>(one_way_enemy_it->coordX + steps.coordX),
                         static_cast<short>(one_way_enemy_it->coordY + steps.coordY)
                     };
+                    Coord team_checkers_coord = {
+                        static_cast<short>(one_way_enemy_it->coordX - steps.coordX),
+                        static_cast<short>(one_way_enemy_it->coordY - steps.coordY)
+                    };
 
-                    if (std::find(std::begin(enemies), std::end(enemies), defence) == std::end(enemies)){
+                    // TODO: multithreading;
+                    if (std::find(std::begin(enemies), std::end(enemies), defence) == std::end(enemies) && !current_player->contain_checker(team_checkers_coord)){
+                        // check for defence;
                         while (defence != new_coord){
                             defence = Coord{
                                 static_cast<short>(defence.coordX + steps.coordX),
@@ -506,6 +512,29 @@ namespace game{
 
                                 throw WrongCheckerMoveException(error_msg);
                             }
+                        }
+
+                        // check for teamates;
+                        while (team_checkers_coord != old_coord){
+                            defence = Coord{
+                                static_cast<short>(defence.coordX - steps.coordX),
+                                static_cast<short>(defence.coordY - steps.coordY)
+                            };
+
+                            std::thread(&Logger::do_log, "GameField::move_queen_checker (" + Logger::ptr_to_string(this) + 
+                                "). Checked team coord: " + defence.to_string(), Logger::Level::DEBUG
+                            ).detach();
+
+                            if (current_player->contain_checker(team_checkers_coord)){
+                                std::string error_msg = "Impossible move! You cannot go throw your teamate!";
+
+                                std::thread(&Logger::do_log, "GameCheckers::move_queen_checker (" + Logger::ptr_to_string(this) 
+                                    + ") throw the WrongCheckerMoveException: " + error_msg, Logger::Level::ERROR
+                                ).detach();
+
+                                throw WrongCheckerMoveException(error_msg);
+                            }
+                            
                         }
                         
                         std::thread move_checker_th(&Player::make_move_to, current_player, std::ref(old_coord), std::ref(new_coord));
@@ -651,6 +680,31 @@ namespace game{
                         continue;
                     }
                 }
+                else{
+                    Coord current_checker_coord = checker_it->get_current_coord();
+                    Coord distance =  current_checker_coord - *enemy_coord_it;
+                    Coord steps = {
+                        distance.coordX > 0 ? short(1) : short(-1),
+                        distance.coordY > 0 ? short(1) : short(-1)
+                    };
+
+                    Coord checked_coord = *enemy_coord_it;
+                    
+                    bool teamate_detected = false;
+                    while (checked_coord != current_checker_coord){
+                        checked_coord = checked_coord + steps;
+
+                        if (current_player->contain_checker(checked_coord)){
+                            teamate_detected = true;
+                            break;
+                        }
+                    }
+
+                    if (teamate_detected){
+                        continue;
+                    }
+                }
+
                 // check if checker is under defence;
                 auto hit_checker = enemy_coord_it;
                 std::thread(&Logger::do_log, "GameCheckers::checkers_need_to_hit (" + Logger::ptr_to_string(this) + 
