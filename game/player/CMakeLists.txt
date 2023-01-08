@@ -4,16 +4,13 @@ cmake_minimum_required(VERSION 3.6.0)
 
 set(
     LIB_NAME
-    game_field_lib
+    players_lib
 )
 
 set(
     SRC
-    src/game_checkers.cpp
-    src/checker.cpp
-    src/ifigure.cpp
-    src/game_field.cpp
-    src/checker_queen.cpp
+    src/player.cpp
+    src/player_info.cpp
 )
 
 add_library(
@@ -23,7 +20,7 @@ add_library(
 
 target_include_directories(
     ${LIB_NAME}
-    PUBLIC 
+    PUBLIC
     include
 )
 
@@ -31,9 +28,9 @@ target_include_directories(
 
 set(
     ALL_LIBS
-    exceptions_lib
-    players_lib
+    game_field_lib
     config_lib
+    exceptions_lib
     logger_lib
 )
 

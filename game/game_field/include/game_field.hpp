@@ -2,10 +2,13 @@
 #define GAME_FIELD_HPP
 
 #include "checker.hpp"
+#include "unright_color_exception.hpp"
 
 #include <array>
 #include <thread>
 #include <iostream>
+#include <deque>
+#include <memory>
 
 namespace game{
     struct Size{
@@ -15,21 +18,47 @@ namespace game{
 
     class GameField{
     private:
-        static constexpr short m_START_ROWS_COUNT {3};
-        static constexpr short m_START_CHECKERS_IN_ROW {4};
         static constexpr Size m_GAME_FIELD_SIZE{8, 8};
 
-        std::array<std::array<short, m_GAME_FIELD_SIZE.width>, m_GAME_FIELD_SIZE.height> m_field = {0};
+        std::array<std::array<unsigned short, m_GAME_FIELD_SIZE.width>, m_GAME_FIELD_SIZE.height> m_field = {0};
 
     public:
-        GameField(void);
+        GameField(void) = default;
 
+        /* Descriptions:
+         *  Return game field size;
+         */
         static Size get_game_field_size(void) noexcept;
 
+        /* Descriptions:
+         *  Draw game field in console;
+         */
         void draw_game_field(void) const noexcept;
 
-    private:
-        void fill_checkers_field_with(Color checker_color);
+        /* Descriptions:
+         *  Added new checkers to game field;
+         * 
+         * Args:
+         *  checkers - list of checkers we need to add to game field;
+         */
+        void add_checkers(const std::deque<std::shared_ptr<Checker>> &checkers);
+
+        /* Description:
+         *  Clear game field from all elements;
+         */
+        void reset(void);
+
+        /* Description:
+         *  check if coord inside game field;
+         *
+         * Args:
+         *  coord - coord we check;
+         * 
+         * Return values;
+         *  true - if coord inside game field;
+         *  false - in other case;
+         */
+        bool coord_in_game_field(const Coord &coord) const noexcept;
     };
 }
 

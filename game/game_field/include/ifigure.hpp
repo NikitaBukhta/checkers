@@ -1,11 +1,18 @@
 #ifndef IFIGURE_H
 #define IFIGURE_H
 
+#include <string>
+
 namespace game{
     enum class Color : char{
-        no_color = 0,
-        white,
-        black
+        NO_COLOR = 0,
+        WHITE,
+        BLACK
+    };
+
+    enum class CheckerType : char{
+        CHECKER = 0,
+        QUEEN = 2
     };
 
     struct Coord{
@@ -14,14 +21,31 @@ namespace game{
 
         void operator= (const Coord &other);
 
-        bool operator== (const Coord &other);
+        bool operator== (const Coord &other) const;
 
-        bool operator!= (const Coord &other);
+        bool operator!= (const Coord &other) const;
+
+        Coord operator- (const Coord &other) const;
+
+        Coord operator+ (const Coord &other) const;
+
+        Coord operator/ (const int value) const; 
+
+        Coord operator* (const int value) const;
+
+        /* Description:
+         *  Return coords in string format;
+         */
+        std::string to_string(void) const;
     };
 
     class IFigure{
     public:
         virtual void make_move_to(const Coord &coord) = 0;
+
+        virtual std::string color_to_string(void) const = 0;
+
+        virtual CheckerType get_checker_type(void) const = 0;
     };
 }
 
